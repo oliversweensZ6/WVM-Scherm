@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAvb1RTOvNSMuRvIntSUPQKoI-mdPBlhcA",
@@ -15,60 +15,76 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- ADMIN FUNCTIES ---
+// --- ADMIN LOGICA ---
 if (document.getElementById('btn-save-agenda')) {
+    // Agenda opslaan
     document.getElementById('btn-save-agenda').onclick = async () => {
-        const rawDate = new Date(document.getElementById('ag-datum').value);
-        const options = { day: 'numeric', month: 'short' };
-        const datumStr = rawDate.toLocaleDateString('nl-NL', options).toUpperCase();
-
+        const d = new Date(document.getElementById('ag-datum').value);
+        const datumStr = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }).toUpperCase();
         await addDoc(collection(db, "agenda"), {
             datum: datumStr,
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
-            sortDate: rawDate
+            timestamp: d.getTime()
         });
-        alert("Opgeslagen!");
+        alert("Agenda item opgeslagen!");
     };
 
-    document.getElementById('btn-save-mededeling').onclick = async () => {
-        await setDoc(doc(db, "instellingen", "mededeling"), {
-            tekst: document.getElementById('mededeling-tekst').value
-        });
+    // Mededeling opslaan
+    document.getElementById('btn-save-med').onclick = async () => {
+        await setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
         alert("Mededeling bijgewerkt!");
+    };
+
+    // Rooster opslaan
+    document.getElementById('btn-save-rooster').onclick = async () => {
+        await setDoc(doc(db, "content", "rooster"), {
+            zorgbad: document.getElementById('rooster-zorg').value,
+            wedstrijdbad: document.getElementById('rooster-wed').value
+        });
+        alert("Rooster opgeslagen!");
     };
 }
 
-// --- DISPLAY FUNCTIES ---
+// --- DISPLAY LOGICA ---
 if (document.getElementById('agenda-content')) {
-    let pages = ['page-agenda', 'page-rooster'];
-    let currentPageIndex = 0;
+    let activePages = ['page-agenda', 'page-rooster'];
+    let currentIndex = 0;
 
-    // Haal Agenda op
-    onSnapshot(query(collection(db, "agenda"), orderBy("sortDate")), (snapshot) => {
+    // Haal Agenda Live op
+    onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let html = '';
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            html += `<div class="agenda-item"><span class="date">${d.datum}</span> <span>${d.titel} - ${d.onderwerp}</span></div>`;
+        snap.forEach(doc => {
+            const data = doc.data();
+            html += `<div class="agenda-item"><span class="date">${data.datum}</span> <span>${data.titel} - ${data.onderwerp}</span></div>`;
         });
         document.getElementById('agenda-content').innerHTML = html;
     });
 
-    // Haal Mededeling op & check of pagina moet worden toegevoegd
-    onSnapshot(doc(db, "instellingen", "mededeling"), (doc) => {
-        const tekst = doc.data()?.tekst;
-        if (tekst && tekst.trim() !== "") {
-            document.getElementById('announcement-text').innerText = tekst;
-            if (!pages.includes('page-announcement')) pages.push('page-announcement');
-        } else {
-            pages = pages.filter(p => p !== 'page-announcement');
+    // Haal Rooster Live op
+    onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('rooster-zorgbad').innerHTML = data.zorgbad.split('\n').map(line => `<div class="rooster-item">${line}</div>`).join('');
+            document.getElementById('rooster-wedstrijdbad').innerHTML = data.wedstrijdbad.split('\n').map(line => `<div class="rooster-item">${line}</div>`).join('');
         }
     });
 
-    // Wissel-systeem
+    // Haal Mededeling Live op en voeg pagina toe indien nodig
+    onSnapshot(doc(db, "content", "mededeling"), (docSnap) => {
+        const tekst = docSnap.data()?.tekst;
+        if (tekst && tekst.trim() !== "") {
+            document.getElementById('announcement-text').innerText = tekst;
+            if (!activePages.includes('page-announcement')) activePages.push('page-announcement');
+        } else {
+            activePages = activePages.filter(p => p !== 'page-announcement');
+        }
+    });
+
+    // Pagina wissel-systeem (elke 15 seconden)
     setInterval(() => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        currentPageIndex = (currentPageIndex + 1) % pages.length;
-        document.getElementById(pages[currentPageIndex]).classList.add('active');
-    }, 10000); // Wisselt elke 15 seconden
+        currentIndex = (currentIndex + 1) % activePages.length;
+        document.getElementById(activePages[currentIndex]).classList.add('active');
+    }, 15000);
 }

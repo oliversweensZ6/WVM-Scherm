@@ -10,7 +10,7 @@
     <div class="admin-container">
         
         <div id="login-form" class="admin-section">
-            <h2 style="text-align: center;">Inloggen</h2>
+            <h2 style="text-align: center;">Inloggen Beheer</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
@@ -18,51 +18,42 @@
 
         <div id="admin-content" style="display: none;">
             
-            <!-- SYSTEEM MODUS -->
             <div class="admin-section">
                 <h2>Systeem Modus</h2>
                 <div class="switch-row">
-                    <span>Grote Klok Modus (Exclusief)</span>
-                    <label class="switch">
-                        <input type="checkbox" id="groot-klok-mode-switch">
-                        <span class="slider"></span>
-                    </label>
+                    <span>Grote Klok Modus</span>
+                    <label class="switch"><input type="checkbox" id="groot-klok-mode-switch"><span class="slider"></span></label>
                 </div>
-                <p style="font-size: 12px; color: #666;">AAN: Alleen de grote klok tonen.<br>UIT: Agenda/Rooster rotatie tonen.</p>
+                <div class="switch-row">
+                    <span>Kleine klok (hoek)</span>
+                    <label class="switch"><input type="checkbox" id="klok-switch"><span class="slider"></span></label>
+                </div>
                 <hr>
-                <div class="switch-row">
-                    <span>Kleine klok (hoek) tonen</span>
-                    <label class="switch">
-                        <input type="checkbox" id="klok-switch">
-                        <span class="slider"></span>
-                    </label>
+                <div style="margin-top:10px;">
+                    <span>Wisseltijd (sec):</span>
+                    <input type="number" id="interval-tijd" min="5" style="width: 60px; margin-left:10px;">
+                    <button id="btn-save-interval" class="main-btn" style="margin-top:5px;">Tijd Opslaan</button>
                 </div>
             </div>
 
-            <!-- AGENDA -->
             <div class="admin-section">
-                <h2>Agenda</h2>
+                <h2>Agenda Item</h2>
                 <input type="date" id="ag-datum">
-                <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
-                <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
+                <input type="text" id="ag-titel" placeholder="Titel (Bijv: Pasen)">
+                <input type="text" id="ag-onderwerp" placeholder="Onderwerp (Optioneel)">
                 <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
-                <div id="admin-agenda-list" style="margin-top:15px;"></div>
+                <div id="admin-agenda-list" style="margin-top:10px;"></div>
             </div>
 
-            <!-- MEDEDELING -->
             <div class="admin-section">
                 <div class="switch-row">
-                    <h2>Huishoudelijke mededeling</h2>
-                    <label class="switch">
-                        <input type="checkbox" id="med-switch">
-                        <span class="slider"></span>
-                    </label>
+                    <h2>Mededeling</h2>
+                    <label class="switch"><input type="checkbox" id="med-switch"><span class="slider"></span></label>
                 </div>
                 <textarea id="med-tekst" rows="3" placeholder="Typ hier de tekst..."></textarea>
                 <button id="btn-save-med" class="main-btn">Tekst Opslaan</button>
             </div>
 
-            <!-- ROOSTER -->
             <div class="admin-section">
                 <h2>Lesrooster</h2>
                 <textarea id="rooster-zorg" rows="4" placeholder="Zorgbad..."></textarea>
@@ -70,7 +61,7 @@
                 <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
             </div>
             
-            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer; font-weight:bold;">Uitloggen</button>
+            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer;">Uitloggen</button>
         </div>
     </div>
     <script type="module" src="script.js"></script>

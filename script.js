@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -15,15 +15,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// --- KLOK FUNCTIE ---
+// --- KLOK FUNCTIE (Loopt altijd op de achtergrond) ---
 function startKlok() {
-    const klokEl = document.getElementById('klok-container');
-    if (klokEl) {
-        setInterval(() => {
+    setInterval(() => {
+        const klokEl = document.getElementById('klok-container');
+        if (klokEl) {
             const nu = new Date();
             klokEl.innerText = nu.toLocaleTimeString('nl-NL', { hour12: false });
-        }, 1000);
-    }
+        }
+    }, 1000);
 }
 startKlok();
 
@@ -36,6 +36,7 @@ if (document.getElementById('login-form')) {
         if (user) {
             loginDiv.style.display = 'none';
             adminDiv.style.display = 'block';
+            console.log("Ingelogd als:", user.email);
             laadAdminData();
         } else {
             loginDiv.style.display = 'block';
@@ -46,13 +47,17 @@ if (document.getElementById('login-form')) {
     document.getElementById('btn-login').onclick = async () => {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
-        try { await signInWithEmailAndPassword(auth, email, pass); } 
-        catch (e) { alert("Inloggegevens incorrect"); }
+        try { 
+            await signInWithEmailAndPassword(auth, email, pass); 
+        } catch (e) { 
+            alert("Inloggen mislukt. Controleer je gegevens in Firebase Auth."); 
+        }
     };
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
     function laadAdminData() {
+        // Agenda laden
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
             let h = '';
             snap.forEach(d => {
@@ -63,6 +68,7 @@ if (document.getElementById('login-form')) {
             document.querySelectorAll('.btn-delete').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
 
+        // Bestaande data ophalen voor velden
         onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
         onSnapshot(doc(db, "content", "rooster"), d => { 
             if(d.exists()) {
@@ -70,33 +76,73 @@ if (document.getElementById('login-form')) {
                 document.getElementById('rooster-wed').value = d.data().wedstrijdbad;
             }
         });
-        onSnapshot(doc(db, "content", "instellingen"), d => { if(d.exists()) document.getElementById('klok-toggle').checked = d.data().toonKlok; });
+
+        // Klok instelling ophalen (NU GEFIXED)
+        onSnapshot(doc(db, "content", "instellingen"), (d) => {
+            if(d.exists()) {
+                document.getElementById('klok-toggle').checked = d.data().toonKlok;
+                console.log("Klok instelling geladen:", d.data().toonKlok);
+            }
+        });
     }
 
+    // Opslaan functies (met error handling)
     document.getElementById('btn-save-agenda').onclick = async () => {
         const val = document.getElementById('ag-datum').value;
-        if(!val) return alert("Datum verplicht");
+        if(!val) return alert("Selecteer een datum!");
         const d = new Date(val); d.setHours(0,0,0,0);
-        await addDoc(collection(db, "agenda"), {
-            datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
-            titel: document.getElementById('ag-titel').value,
-            onderwerp: document.getElementById('ag-onderwerp').value,
-            timestamp: d.getTime()
-        });
-        document.getElementById('ag-titel').value = ""; document.getElementById('ag-onderwerp').value = "";
+        try {
+            await addDoc(collection(db, "agenda"), {
+                datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
+                titel: document.getElementById('ag-titel').value,
+                onderwerp: document.getElementById('ag-onderwerp').value,
+                timestamp: d.getTime()
+            });
+            alert("Agenda bijgewerkt!");
+        } catch(e) { alert("Fout bij opslaan agenda: " + e.message); }
     };
 
-    document.getElementById('btn-save-med').onclick = () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
-    document.getElementById('btn-save-rooster').onclick = () => setDoc(doc(db, "content", "rooster"), { 
-        zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value 
-    });
-    document.getElementById('btn-save-settings').onclick = () => setDoc(doc(db, "content", "instellingen"), { toonKlok: document.getElementById('klok-toggle').checked });
+    document.getElementById('btn-save-med').onclick = async () => {
+        try {
+            await setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
+            alert("Mededeling opgeslagen!");
+        } catch(e) { alert("Fout: " + e.message); }
+    };
+
+    document.getElementById('btn-save-rooster').onclick = async () => {
+        try {
+            await setDoc(doc(db, "content", "rooster"), { 
+                zorgbad: document.getElementById('rooster-zorg').value, 
+                wedstrijdbad: document.getElementById('rooster-wed').value 
+            });
+            alert("Rooster opgeslagen!");
+        } catch(e) { alert("Fout: " + e.message); }
+    };
+
+    document.getElementById('btn-save-settings').onclick = async () => {
+        try {
+            await setDoc(doc(db, "content", "instellingen"), { 
+                toonKlok: document.getElementById('klok-toggle').checked 
+            });
+            alert("Instellingen opgeslagen!");
+        } catch(e) { alert("Fout: " + e.message); }
+    };
 }
 
 // --- DISPLAY LOGICA (index.html) ---
 if (document.getElementById('agenda-content')) {
     let activePages = ['page-agenda', 'page-rooster'];
     let currentIndex = 0;
+
+    // Klok zichtbaarheid (NU GEFIXED)
+    onSnapshot(doc(db, "content", "instellingen"), (docSnap) => {
+        const klokContainer = document.getElementById('klok-container');
+        if (docSnap.exists()) {
+            klokContainer.style.display = docSnap.data().toonKlok ? 'block' : 'none';
+        } else {
+            klokContainer.style.display = 'block'; // Fallback: altijd aan
+        }
+    });
 
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let h = '';
@@ -123,12 +169,6 @@ if (document.getElementById('agenda-content')) {
         } else {
             activePages = activePages.filter(p => p !== 'page-announcement');
         }
-    });
-
-    onSnapshot(doc(db, "content", "instellingen"), (docSnap) => {
-        const klok = document.getElementById('klok-container');
-        if (docSnap.exists() && docSnap.data().toonKlok) klok.style.display = 'block';
-        else klok.style.display = 'none';
     });
 
     setInterval(() => {

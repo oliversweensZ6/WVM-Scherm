@@ -1,58 +1,77 @@
-body {
+/* Zorg dat de hele pagina gevuld is */
+html, body {
     margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
     overflow: hidden;
+    /* De blauwe gradient van je foto */
     background: radial-gradient(circle at center, #2b4b9b 0%, #162650 100%);
     color: white;
     font-family: 'Arial', sans-serif;
-    height: 100vh;
 }
 
+/* Logo rechtsboven */
 .logo {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 250px;
+    top: 30px;
+    right: 40px;
+    width: 300px; /* Maak groot genoeg */
+    z-index: 100;
 }
 
+/* Verberg alle pagina's standaard */
 .page {
     display: none;
-    padding: 80px;
+    padding: 60px 100px;
     height: 100vh;
     box-sizing: border-box;
 }
 
-.page.active { display: block; }
+/* Alleen de actieve pagina tonen */
+.page.active {
+    display: block;
+}
 
+/* De rode titel van de eerste foto */
 .title {
-    color: #ff0000; /* Rood zoals in je foto */
-    font-size: 5rem;
-    margin-bottom: 50px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #ff0000; 
+    font-size: 80px;
+    font-weight: bold;
+    margin: 0 0 50px 0;
+    line-height: 1;
 }
 
+/* Agenda styling */
 .agenda-item {
-    font-size: 2.5rem;
-    margin-bottom: 25px;
+    font-size: 45px;
+    margin-bottom: 20px;
     display: flex;
-    gap: 40px;
 }
+.date { width: 250px; font-weight: bold; }
 
-.date { font-weight: bold; width: 200px; }
-
+/* Rooster styling (twee kolommen) */
 .rooster-container {
     display: flex;
     justify-content: space-between;
-    font-size: 2rem;
+    margin-top: 50px;
 }
+.column { width: 48%; }
+.column h2 { 
+    font-size: 50px; 
+    border-bottom: 3px solid white; 
+    padding-bottom: 10px;
+}
+.rooster-item { font-size: 35px; margin-bottom: 10px; }
 
-.column { width: 45%; }
-.column h2 { border-bottom: 2px solid white; }
-
+/* Mededeling box */
 .announcement-box {
-    background: rgba(255, 255, 255, 0.1);
-    border: 5px solid red;
-    padding: 50px;
+    border: 10px solid red;
+    padding: 60px;
     text-align: center;
     margin-top: 100px;
-    border-radius: 20px;
+    border-radius: 30px;
+    background: rgba(0,0,0,0.3);
 }
+.announcement-box h1 { font-size: 100px; color: red; margin: 0; }
+.announcement-box p { font-size: 60px; }

@@ -8,53 +8,50 @@
 </head>
 <body class="admin-body">
     <div class="admin-container">
-        <!-- Inlogscherm -->
+        
+        <!-- Login Sectie -->
         <div id="login-form" class="admin-section">
-            <h2>WVM Beheer Inloggen</h2>
+            <h2 style="text-align: center;">WVM Beheer Inloggen</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
         </div>
 
-        <!-- Beheerpaneel -->
-        <div id="admin-content">
+        <!-- Beheer Sectie (Alleen zichtbaar na inloggen) -->
+        <div id="admin-content" style="display: none;">
             <div class="admin-section">
-                <h2>Agenda Toevoegen</h2>
+                <h2>1. Agenda Toevoegen</h2>
                 <input type="date" id="ag-datum">
-                <input type="text" id="ag-titel" placeholder="Titel">
-                <input type="text" id="ag-onderwerp" placeholder="Onderwerp">
+                <input type="text" id="ag-titel" placeholder="Titel (bijv. Proefzwemmen)">
+                <input type="text" id="ag-onderwerp" placeholder="Onderwerp (bijv. ABC Diploma)">
                 <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
+                <div id="admin-agenda-list" style="margin-top: 15px; border-top: 1px solid #eee;"></div>
             </div>
 
             <div class="admin-section">
-                <h2>Huidige Agenda</h2>
-                <div id="admin-agenda-list"></div>
+                <h2>2. Mededeling</h2>
+                <textarea id="med-tekst" rows="4" placeholder="Typ hier de tekst voor het scherm..."></textarea>
+                <button id="btn-save-med" class="main-btn">Update Mededeling</button>
             </div>
 
             <div class="admin-section">
-                <h2>Mededeling</h2>
-                <textarea id="med-tekst" rows="3"></textarea>
-                <button id="btn-save-med" class="main-btn">Opslaan</button>
+                <h2>3. Lesrooster</h2>
+                <p><strong>Zorgbad:</strong></p>
+                <textarea id="rooster-zorg" rows="5"></textarea>
+                <p><strong>Wedstrijdbad:</strong></p>
+                <textarea id="rooster-wed" rows="5"></textarea>
+                <button id="btn-save-rooster" class="main-btn">Update Rooster</button>
             </div>
 
             <div class="admin-section">
-                <h2>Rooster</h2>
-                <p>Zorgbad:</p>
-                <textarea id="rooster-zorg" rows="4"></textarea>
-                <p>Wedstrijdbad:</p>
-                <textarea id="rooster-wed" rows="4"></textarea>
-                <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
+                <h2>4. Systeem Instellingen</h2>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 16px; cursor: pointer;">
+                    <input type="checkbox" id="klok-toggle" style="width: 25px; height: 25px;"> 
+                    Digitale klok tonen
+                </label>
+                <button id="btn-save-settings" class="main-btn" style="margin-top: 15px;">Instellingen Opslaan</button>
             </div>
-            
-            <div class="admin-section">
-            <h2>4. Systeem Instellingen</h2>
-            <label style="display: flex; align-items: center; gap: 10px; font-size: 18px;">
-                <input type="checkbox" id="klok-toggle" style="width: 25px; height: 25px;"> 
-                    Digitale klok tonen op scherm
-            </label>
-            <button id="btn-save-settings" class="main-btn" style="margin-top: 15px;">Instellingen Opslaan</button>
-            </div>
-            
+
             <button id="btn-logout" style="width:100%; color:red; background:none; border:none; padding:20px; cursor:pointer;">Uitloggen</button>
         </div>
     </div>

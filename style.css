@@ -1,1 +1,31 @@
+body.screen-bg {
+    background: radial-gradient(circle, #2b4691 0%, #1a2a5a 100%);
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    padding: 50px;
+}
 
+.agenda-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.row {
+    display: flex;
+    font-size: 2.5rem; /* Lekker groot voor op TV */
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 0;
+}
+
+.col-date {
+    width: 250px;
+    font-weight: bold;
+}
+
+/* Voor de admin pagina */
+.admin-body { font-family: sans-serif; padding: 20px; background: #f0f0f0; color: #333; }
+input { padding: 10px; margin: 5px; }

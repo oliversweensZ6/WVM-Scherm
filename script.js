@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klok update (Alleen als de container bestaat op index.html)
+// Klok update
 setInterval(() => {
     const el = document.getElementById('klok-container');
     if (el) el.innerText = new Date().toLocaleTimeString('nl-NL', { hour12: false });
@@ -39,7 +39,7 @@ if (document.getElementById('is-admin-page')) {
     document.getElementById('btn-login')?.addEventListener('click', () => {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
-        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Login fout: " + e.message));
+        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Inlog fout: " + e.message));
     });
 
     document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
@@ -84,11 +84,16 @@ if (document.getElementById('is-admin-page')) {
         if(!val) return alert("Datum verplicht");
         const d = new Date(val); d.setHours(0,0,0,0);
         addDoc(collection(db, "agenda"), {
-            datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
+            // Nu met 'long' voor de volledige maandnaam
+            datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'long'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
-        }).then(() => alert("Toegevoegd"));
+        }).then(() => {
+            alert("Toegevoegd");
+            document.getElementById('ag-titel').value = "";
+            document.getElementById('ag-onderwerp').value = "";
+        });
     });
 
     document.getElementById('btn-save-med')?.addEventListener('click', () => {

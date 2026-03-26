@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -38,7 +38,7 @@ if (document.getElementById('is-admin-page')) {
     });
 
     document.getElementById('btn-login')?.addEventListener('click', () => {
-        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert("Fout: " + e.message));
+        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert(e.message));
     });
     document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
@@ -68,7 +68,30 @@ if (document.getElementById('is-admin-page')) {
 
     // Switches direct opslaan
     document.getElementById('klok-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKlokKleine: e.target.checked }, { merge: true }));
-    document.getElementById('groot-klok-mode-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { alleenGroteKlok: e.target.checked }, { merge: true }));
+    
+    // EXCLUSIEVE LOGICA VOOR GROTE KLOK MODUS
+    document.getElementById('groot-klok-mode-switch')?.addEventListener('change', async (e) => {
+        const isAan = e.target.checked;
+        const instRef = doc(db, "content", "instellingen");
+        const docSnap = await getDoc(instRef);
+        const data = docSnap.exists() ? docSnap.data() : {};
+
+        if (isAan) {
+            // Stap 1: Onthoud huidige status kleine klok en zet kleine klok UIT
+            await setDoc(instRef, { 
+                alleenGroteKlok: true, 
+                toonKlokKleineBackup: data.toonKlokKleine || false,
+                toonKlokKleine: false 
+            }, { merge: true });
+        } else {
+            // Stap 2: Zet Grote Klok uit en herstel kleine klok status uit backup
+            await setDoc(instRef, { 
+                alleenGroteKlok: false, 
+                toonKlokKleine: data.toonKlokKleineBackup || false 
+            }, { merge: true });
+        }
+    });
+
     document.getElementById('med-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonMededelingScherm: e.target.checked }, { merge: true }));
 
     document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
@@ -120,16 +143,14 @@ if (displayAgenda) {
         config = docSnap.data() || {};
         document.getElementById('klok-container').style.display = config.toonKlokKleine ? 'block' : 'none';
         
-        // Als Grote Klok Modus aan staat, forceer die pagina direct
         if (config.alleenGroteKlok) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-klok-groot').classList.add('active');
         }
     });
 
-    // Rotatie Systeem
     setInterval(() => {
-        if (config.alleenGroteKlok) return; // Stop rotatie als klok-modus aan staat
+        if (config.alleenGroteKlok) return;
 
         let rotation = [...basePages];
         if (config.toonMededelingScherm && medTekst.trim() !== "") rotation.push('page-announcement');

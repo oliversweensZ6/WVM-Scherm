@@ -70,5 +70,5 @@ if (document.getElementById('agenda-content')) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         currentPageIndex = (currentPageIndex + 1) % pages.length;
         document.getElementById(pages[currentPageIndex]).classList.add('active');
-    }, 15000); // Wisselt elke 15 seconden
+    }, 10000); // Wisselt elke 15 seconden
 }

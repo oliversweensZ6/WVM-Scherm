@@ -2,52 +2,49 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WVM Beheer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="admin-body">
-    <h1>WVM Schermbeheer</h1>
 
-    <!-- Agenda Sectie -->
-    <div class="admin-section">
-        <h2>1. Agenda Beheren</h2>
-        <div class="admin-grid">
-            <div class="admin-col">
-                <h3>Nieuw item toevoegen</h3>
-                <input type="date" id="ag-datum">
-                <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
-                <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
-                <button id="btn-save-agenda" class="main-btn">Voeg toe aan lijst</button>
-            </div>
-            <div class="admin-col">
-                <h3>Huidige Agenda (Opgeslagen)</h3>
-                <div id="admin-agenda-list" class="list-container">Laden...</div>
-            </div>
-        </div>
+    <!-- Inlogscherm -->
+    <div id="login-form" class="admin-section">
+        <h2>WVM Beheer Inloggen</h2>
+        <input type="email" id="login-email" placeholder="E-mailadres">
+        <input type="password" id="login-pass" placeholder="Wachtwoord">
+        <button id="btn-login" class="main-btn">Inloggen</button>
     </div>
 
-    <!-- Mededeling Sectie -->
-    <div class="admin-section">
-        <h2>2. Mededeling</h2>
-        <p>Pas de tekst hieronder aan en klik op update. Maak leeg om te verbergen op het scherm.</p>
-        <textarea id="med-tekst" rows="4"></textarea>
-        <button id="btn-save-med" class="main-btn">Update Mededeling</button>
-    </div>
-
-    <!-- Rooster Sectie -->
-    <div class="admin-section">
-        <h2>3. Lesrooster Aanpassen</h2>
-        <div class="admin-grid">
-            <div class="admin-col">
-                <h3>Zorgbad</h3>
-                <textarea id="rooster-zorg" rows="10"></textarea>
-            </div>
-            <div class="admin-col">
-                <h3>Wedstrijdbad</h3>
-                <textarea id="rooster-wed" rows="10"></textarea>
-            </div>
+    <!-- Het eigenlijke beheer (verstopt tot inlog) -->
+    <div id="admin-content">
+        <h1>Beheerpaneel</h1>
+        
+        <div class="admin-section">
+            <h2>Agenda Items</h2>
+            <input type="date" id="ag-datum">
+            <input type="text" id="ag-titel" placeholder="Titel">
+            <input type="text" id="ag-onderwerp" placeholder="Onderwerp">
+            <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
+            <div id="admin-agenda-list" style="margin-top:20px;"></div>
         </div>
-        <button id="btn-save-rooster" class="main-btn">Hele Rooster Opslaan</button>
+
+        <div class="admin-section">
+            <h2>Mededeling</h2>
+            <textarea id="med-tekst" rows="3" placeholder="Tekst voor mededeling..."></textarea>
+            <button id="btn-save-med" class="main-btn">Opslaan</button>
+        </div>
+
+        <div class="admin-section">
+            <h2>Rooster</h2>
+            <h3>Zorgbad</h3>
+            <textarea id="rooster-zorg" rows="5"></textarea>
+            <h3>Wedstrijdbad</h3>
+            <textarea id="rooster-wed" rows="5"></textarea>
+            <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
+        </div>
+        
+        <button id="btn-logout" style="background:none; border:none; color:red; cursor:pointer; margin-top:20px;">Uitloggen</button>
     </div>
 
     <script type="module" src="script.js"></script>

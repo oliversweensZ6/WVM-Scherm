@@ -1,40 +1,36 @@
-/* ALGEMENE STIJL (Scherm & Admin) */
-html, body {
-    margin: 0; padding: 0; width: 100%; height: 100vh;
-    background: radial-gradient(circle at center, #2b4b9b 0%, #162650 100%);
-    color: white; font-family: 'Arial', sans-serif;
+/* Admin specifieke grid layout */
+.admin-grid {
+    display: flex;
+    gap: 30px;
 }
-
-.logo { position: absolute; top: 40px; right: 50px; width: 450px; z-index: 100; }
-
-/* SCHERM STYLING */
-.page { display: none; padding: 80px 100px; height: 100vh; box-sizing: border-box; }
-.page.active { display: block; }
-.title { color: #ff0000; font-size: 90px; font-weight: bold; margin: 0 0 60px 0; }
-.agenda-item { font-size: 42px; margin-bottom: 25px; display: flex; }
-.date { width: 280px; font-weight: bold; }
-
-/* Mededeling zonder box */
-.announcement-container {
-    text-align: center;
-    margin-top: 150px;
+.admin-col {
+    flex: 1;
 }
-.announcement-container h1 { font-size: 110px; color: #ff0000; margin-bottom: 40px; }
-.announcement-container p { font-size: 75px; line-height: 1.2; }
-
-/* Rooster styling */
-.rooster-container { display: flex; justify-content: space-between; margin-top: 40px; }
-.column { width: 48%; }
-.column h2 { font-size: 55px; border-bottom: 4px solid white; padding-bottom: 15px; margin-bottom: 30px; }
-.rooster-item { font-size: 32px; margin-bottom: 12px; }
-
-/* ADMIN STYLING (Lichte achtergrond voor beheer) */
-.admin-body { background: #f4f4f4; color: #333; height: auto; overflow: auto; padding: 40px; }
-.admin-section { background: white; padding: 25px; margin-bottom: 30px; border-radius: 12px; color: #333; }
-.admin-item { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 10px; border-bottom: 1px solid #eee; font-size: 18px;
+.list-container {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 10px;
 }
-.btn-delete { background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; font-family: sans-serif; }
-button.main-btn { background: #2b4b9b; color: white; border: none; padding: 15px 30px; cursor: pointer; border-radius: 6px; width: 100%; font-weight: bold; }
+.admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+.btn-delete {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.btn-delete:hover { background: #cc0000; }

@@ -10,7 +10,7 @@
     <div class="admin-container">
         
         <!-- Login Formulier -->
-        <div id="login-form" class="admin-section" style="display: block;">
+        <div id="login-form" class="admin-section">
             <h2 style="text-align: center;">WVM Beheer</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
@@ -33,24 +33,25 @@
             <div class="admin-section">
                 <h2>Agenda Item</h2>
                 <input type="date" id="ag-datum">
-                <input type="text" id="ag-titel" placeholder="Titel">
-                <input type="text" id="ag-onderwerp" placeholder="Onderwerp">
+                <!-- Placeholders hieronder toegevoegd -->
+                <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
+                <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
                 <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
                 <div id="admin-agenda-list" style="margin-top:15px;"></div>
             </div>
 
             <div class="admin-section">
-                <h2>Mededeling</h2>
-                <textarea id="med-tekst" rows="3"></textarea>
+                <h2>Huishoudelijke mededeling</h2>
+                <textarea id="med-tekst" rows="3" placeholder="Typ hier de tekst voor het scherm..."></textarea>
                 <button id="btn-save-med" class="main-btn">Opslaan</button>
             </div>
 
             <div class="admin-section">
-                <h2>Rooster</h2>
+                <h2>Lesrooster</h2>
                 <p>Zorgbad:</p>
-                <textarea id="rooster-zorg" rows="4"></textarea>
+                <textarea id="rooster-zorg" rows="4" placeholder="08.30 - 09.30 Peuter survival"></textarea>
                 <p>Wedstrijdbad:</p>
-                <textarea id="rooster-wed" rows="4"></textarea>
+                <textarea id="rooster-wed" rows="4" placeholder="10.30 - 11.00 Zwemvaardigheid"></textarea>
                 <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
             </div>
             

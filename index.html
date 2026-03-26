@@ -7,43 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Zorg dat logo.png in je GitHub map staat! -->
-    <img src="logo.png" class="logo" alt="Watervrienden Logo">
+    <!-- Het Logo -->
+    <img src="logo.png" class="logo" alt="Watervrienden Maastricht">
 
-    <!-- Scherm 1: Agenda -->
+    <!-- Pagina 1: Agenda -->
     <div id="page-agenda" class="page active">
         <h1 class="title">Watervrienden<br>Maastricht</h1>
         <div id="agenda-content">
-            <!-- Hier komt de data uit Firebase -->
+            <!-- Data uit Firebase komt hier -->
         </div>
     </div>
 
-    <!-- Scherm 2: Rooster -->
+    <!-- Pagina 2: Lesrooster -->
     <div id="page-rooster" class="page">
-    <h1 class="title" style="color: #ff0000; font-size: 80px; margin-top: -40px;">Lesrooster</h1>
-    <div class="rooster-container">
-        <div class="column">
-            <h2>Zorgbad:</h2>
-            <div id="rooster-zorgbad"></div>
+        <h1 class="title" style="font-size: 80px; margin-top: -60px;">Lesrooster</h1>
+        <div class="rooster-container">
+            <div class="column">
+                <h2>Zorgbad:</h2>
+                <div id="rooster-zorgbad"></div>
+            </div>
+            <div class="column">
+                <h2>Wedstrijdbad:</h2>
+                <div id="rooster-wedstrijdbad"></div>
+            </div>
         </div>
-        <div class="column">
-            <h2>Wedstrijdbad:</h2>
-            <div id="rooster-wedstrijdbad"></div>
-        </div>
-    </div>
     </div>
 
-    <!-- Scherm 3: Mededeling -->
+    <!-- Pagina 3: Mededeling -->
     <div id="page-announcement" class="page">
         <div class="announcement-container">
-            <div class="ann-header">Huishoudelijke Mededeling</div>
+            <div class="ann-header">Huishoudelijke mededeling</div>
             <div id="announcement-text" class="ann-text"></div>
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
-
-    <!-- Voeg de klok toe helemaal onderaan, net boven de laatste </body> tag -->
+    <!-- Digitale Klok -->
     <div id="klok-container" class="klok">00:00:00</div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>

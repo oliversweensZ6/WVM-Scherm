@@ -15,44 +15,36 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Altijd kloktijd berekenen als het element bestaat
+// Klok update (Alleen als de container bestaat op index.html)
 setInterval(() => {
     const el = document.getElementById('klok-container');
     if (el) el.innerText = new Date().toLocaleTimeString('nl-NL', { hour12: false });
 }, 1000);
 
-// ==========================================
-// A. ADMIN LOGICA (Alleen op admin.html)
-// ==========================================
+// --- 1. ADMIN LOGICA ---
 if (document.getElementById('is-admin-page')) {
-    const loginDiv = document.getElementById('login-form');
-    const adminDiv = document.getElementById('admin-content');
-
     onAuthStateChanged(auth, (user) => {
+        const loginDiv = document.getElementById('login-form');
+        const adminDiv = document.getElementById('admin-content');
         if (user) {
             if(loginDiv) loginDiv.style.display = 'none';
             if(adminDiv) adminDiv.style.display = 'block';
-            laadBeheerData();
+            laadData();
         } else {
             if(loginDiv) loginDiv.style.display = 'block';
             if(adminDiv) adminDiv.style.display = 'none';
         }
     });
 
-    const btnLogin = document.getElementById('btn-login');
-    if(btnLogin) {
-        btnLogin.onclick = () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Login fout: " + e.message));
-        };
-    }
+    document.getElementById('btn-login')?.addEventListener('click', () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Login fout: " + e.message));
+    });
 
-    const btnLogout = document.getElementById('btn-logout');
-    if(btnLogout) btnLogout.onclick = () => signOut(auth);
+    document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
-    function laadBeheerData() {
-        // Agenda lijst
+    function laadData() {
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
             const list = document.getElementById('admin-agenda-list');
             if(!list) return;
@@ -65,7 +57,6 @@ if (document.getElementById('is-admin-page')) {
             document.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
 
-        // Prefill vakken
         onSnapshot(doc(db, "content", "mededeling"), d => { 
             const el = document.getElementById('med-tekst');
             if(d.exists() && el) el.value = d.data().tekst; 
@@ -84,9 +75,11 @@ if (document.getElementById('is-admin-page')) {
         });
     }
 
-    // Event listeners voor opslaan (Eerst checken of knop bestaat)
-    const btnAg = document.getElementById('btn-save-agenda');
-    if(btnAg) btnAg.onclick = () => {
+    document.getElementById('klok-switch')?.addEventListener('change', (e) => {
+        setDoc(doc(db, "content", "instellingen"), { toonKlok: e.target.checked }, { merge: true });
+    });
+
+    document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
         const val = document.getElementById('ag-datum').value;
         if(!val) return alert("Datum verplicht");
         const d = new Date(val); d.setHours(0,0,0,0);
@@ -96,23 +89,21 @@ if (document.getElementById('is-admin-page')) {
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
         }).then(() => alert("Toegevoegd"));
-    };
+    });
 
-    const swKlok = document.getElementById('klok-switch');
-    if(swKlok) swKlok.onchange = (e) => setDoc(doc(db, "content", "instellingen"), { toonKlok: e.target.checked }, { merge: true });
+    document.getElementById('btn-save-med')?.addEventListener('click', () => {
+        setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }).then(() => alert("Opgeslagen"));
+    });
 
-    const btnMed = document.getElementById('btn-save-med');
-    if(btnMed) btnMed.onclick = () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }).then(() => alert("Opgeslagen"));
-
-    const btnRoos = document.getElementById('btn-save-rooster');
-    if(btnRoos) btnRoos.onclick = () => setDoc(doc(db, "content", "rooster"), { 
-        zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value 
-    }).then(() => alert("Rooster opgeslagen"));
+    document.getElementById('btn-save-rooster')?.addEventListener('click', () => {
+        setDoc(doc(db, "content", "rooster"), { 
+            zorgbad: document.getElementById('rooster-zorg').value, 
+            wedstrijdbad: document.getElementById('rooster-wed').value 
+        }).then(() => alert("Rooster opgeslagen"));
+    });
 }
 
-// ==========================================
-// B. DISPLAY LOGICA (Alleen op index.html)
-// ==========================================
+// --- 2. TV LOGICA ---
 const displayAgenda = document.getElementById('agenda-content');
 if (displayAgenda) {
     let activePages = ['page-agenda', 'page-rooster'];

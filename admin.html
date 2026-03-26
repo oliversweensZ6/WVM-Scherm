@@ -10,7 +10,7 @@
     <div class="admin-container">
         
         <div id="login-form" class="admin-section">
-            <h2 style="text-align: center;">Inloggen Beheer</h2>
+            <h2 style="text-align: center;">Inloggen</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
@@ -19,9 +19,9 @@
         <div id="admin-content" style="display: none;">
             
             <div class="admin-section">
-                <h2>Systeem Modus</h2>
+                <h2>Systeem Beheer</h2>
                 <div class="switch-row">
-                    <span>Grote Klok Modus</span>
+                    <span>Grote Klok Modus (Exclusief)</span>
                     <label class="switch"><input type="checkbox" id="groot-klok-mode-switch"><span class="slider"></span></label>
                 </div>
                 <div class="switch-row">
@@ -39,15 +39,15 @@
             <div class="admin-section">
                 <h2>Agenda Item</h2>
                 <input type="date" id="ag-datum">
-                <input type="text" id="ag-titel" placeholder="Titel (Bijv: Pasen)">
-                <input type="text" id="ag-onderwerp" placeholder="Onderwerp (Optioneel)">
+                <input type="text" id="ag-titel" placeholder="Bijv: Pasen">
+                <input type="text" id="ag-onderwerp" placeholder="Bijv: Geen les">
                 <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
-                <div id="admin-agenda-list" style="margin-top:10px;"></div>
+                <div id="admin-agenda-list" style="margin-top:15px;"></div>
             </div>
 
             <div class="admin-section">
                 <div class="switch-row">
-                    <h2>Mededeling</h2>
+                    <h2>Huishoudelijke mededeling</h2>
                     <label class="switch"><input type="checkbox" id="med-switch"><span class="slider"></span></label>
                 </div>
                 <textarea id="med-tekst" rows="3" placeholder="Typ hier de tekst..."></textarea>
@@ -56,12 +56,12 @@
 
             <div class="admin-section">
                 <h2>Lesrooster</h2>
-                <textarea id="rooster-zorg" rows="4" placeholder="Zorgbad..."></textarea>
-                <textarea id="rooster-wed" rows="4" placeholder="Wedstrijdbad..."></textarea>
+                <textarea id="rooster-zorg" rows="4"></textarea>
+                <textarea id="rooster-wed" rows="4"></textarea>
                 <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
             </div>
             
-            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer;">Uitloggen</button>
+            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer; font-weight:bold;">Uitloggen</button>
         </div>
     </div>
     <script type="module" src="script.js"></script>

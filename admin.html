@@ -8,40 +8,46 @@
 <body class="admin-body">
     <h1>WVM Schermbeheer</h1>
 
-    <!-- Agenda -->
+    <!-- Agenda Sectie -->
     <div class="admin-section">
         <h2>1. Agenda Beheren</h2>
-        <div id="admin-agenda-list">Laden...</div>
-        <hr>
-        <h3>Nieuw item toevoegen:</h3>
-        <input type="date" id="ag-datum">
-        <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
-        <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
-        <button id="btn-save-agenda" class="main-btn">Voeg toe aan lijst</button>
+        <div class="admin-grid">
+            <div class="admin-col">
+                <h3>Nieuw item toevoegen</h3>
+                <input type="date" id="ag-datum">
+                <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
+                <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
+                <button id="btn-save-agenda" class="main-btn">Voeg toe aan lijst</button>
+            </div>
+            <div class="admin-col">
+                <h3>Huidige Agenda (Opgeslagen)</h3>
+                <div id="admin-agenda-list" class="list-container">Laden...</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Mededeling -->
+    <!-- Mededeling Sectie -->
     <div class="admin-section">
         <h2>2. Mededeling</h2>
-        <p>Huidige tekst (leegmaken om te verbergen):</p>
-        <textarea id="med-tekst" rows="3"></textarea>
+        <p>Pas de tekst hieronder aan en klik op update. Maak leeg om te verbergen op het scherm.</p>
+        <textarea id="med-tekst" rows="4"></textarea>
         <button id="btn-save-med" class="main-btn">Update Mededeling</button>
     </div>
 
-    <!-- Rooster -->
+    <!-- Rooster Sectie -->
     <div class="admin-section">
-        <h2>3. Lesrooster</h2>
-        <div style="display:flex; gap:20px;">
-            <div style="flex:1;">
+        <h2>3. Lesrooster Aanpassen</h2>
+        <div class="admin-grid">
+            <div class="admin-col">
                 <h3>Zorgbad</h3>
-                <textarea id="rooster-zorg" rows="10" placeholder="Eén tijdstip per regel..."></textarea>
+                <textarea id="rooster-zorg" rows="10"></textarea>
             </div>
-            <div style="flex:1;">
+            <div class="admin-col">
                 <h3>Wedstrijdbad</h3>
-                <textarea id="rooster-wed" rows="10" placeholder="Eén tijdstip per regel..."></textarea>
+                <textarea id="rooster-wed" rows="10"></textarea>
             </div>
         </div>
-        <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
+        <button id="btn-save-rooster" class="main-btn">Hele Rooster Opslaan</button>
     </div>
 
     <script type="module" src="script.js"></script>

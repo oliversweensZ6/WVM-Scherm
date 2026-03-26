@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAvb1RTOvNSMuRvIntSUPQKoI-mdPBlhcA",
@@ -8,7 +8,7 @@ const firebaseConfig = {
   projectId: "wvm-scherm",
   storageBucket: "wvm-scherm.firebasestorage.app",
   messagingSenderId: "916379881435",
-  appId: "1:916379881435:web:8e1cc130766e460bdca1fe",
+  appId: "1:916379881435:web:8e1cc130766e460bdca1fe"
   measurementId: "G-Z6FES6DGSV"
 };
 
@@ -17,23 +17,9 @@ const db = getFirestore(app);
 
 // --- ADMIN LOGICA ---
 if (document.getElementById('admin-agenda-list')) {
-    
-    // 1. DATA OPHALEN BIJ START (Pre-fill)
-    async function laadHuidigeData() {
-        // Mededeling ophalen
-        const medDoc = await getDoc(doc(db, "content", "mededeling"));
-        if (medDoc.exists()) document.getElementById('med-tekst').value = medDoc.data().tekst;
+    console.log("Admin paneel gedetecteerd. Verbinding maken...");
 
-        // Rooster ophalen
-        const roosterDoc = await getDoc(doc(db, "content", "rooster"));
-        if (roosterDoc.exists()) {
-            document.getElementById('rooster-zorg').value = roosterDoc.data().zorgbad;
-            document.getElementById('rooster-wed').value = roosterDoc.data().wedstrijdbad;
-        }
-    }
-    laadHuidigeData();
-
-    // 2. AGENDA LIJST (Live update in de admin)
+    // 1. LIVE AGENDA LIJST OPHALEN
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let html = '';
         snap.forEach(docSnap => {
@@ -44,36 +30,47 @@ if (document.getElementById('admin-agenda-list')) {
                     <button class="btn-delete" data-id="${docSnap.id}">Verwijder</button>
                 </div>`;
         });
-        document.getElementById('admin-agenda-list').innerHTML = html || 'Geen agenda items.';
+        document.getElementById('admin-agenda-list').innerHTML = html || 'Geen items in de agenda.';
         
-        // Verwijder-actie koppelen aan knoppen
         document.querySelectorAll('.btn-delete').forEach(btn => {
             btn.onclick = async () => {
-                if(confirm("Weet je zeker dat je dit agenda-punt wilt verwijderen?")) {
-                    await deleteDoc(doc(db, "agenda", btn.dataset.id));
-                }
+                if(confirm("Verwijderen?")) await deleteDoc(doc(db, "agenda", btn.dataset.id));
             };
         });
+    }, (error) => {
+        console.error("Fout bij agenda laden: ", error);
+        document.getElementById('admin-agenda-list').innerHTML = "Fout bij laden. Check console (F12).";
     });
 
-    // 3. OPSLAAN ACTIES
+    // 2. LIVE MEDEDELING OPHALEN (Prefill)
+    onSnapshot(doc(db, "content", "mededeling"), (docSnap) => {
+        if (docSnap.exists()) {
+            document.getElementById('med-tekst').value = docSnap.data().tekst;
+            console.log("Mededeling geladen");
+        }
+    }, (error) => console.error("Fout bij mededeling: ", error));
+
+    // 3. LIVE ROOSTER OPHALEN (Prefill)
+    onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
+        if (docSnap.exists()) {
+            document.getElementById('rooster-zorg').value = docSnap.data().zorgbad;
+            document.getElementById('rooster-wed').value = docSnap.data().wedstrijdbad;
+            console.log("Rooster geladen");
+        }
+    }, (error) => console.error("Fout bij rooster: ", error));
+
+    // 4. OPSLAAN ACTIES
     document.getElementById('btn-save-agenda').onclick = async () => {
-        const datumInput = document.getElementById('ag-datum').value;
-        if(!datumInput) return alert("Kies een datum");
-        
-        const d = new Date(datumInput);
+        const dInput = document.getElementById('ag-datum').value;
+        if(!dInput) return alert("Kies een datum");
+        const d = new Date(dInput);
         const datumStr = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }).toUpperCase();
         
         await addDoc(collection(db, "agenda"), {
-            datum: datumStr,
-            titel: document.getElementById('ag-titel').value,
-            onderwerp: document.getElementById('ag-onderwerp').value,
-            timestamp: d.getTime()
+            datum: datumStr, titel: document.getElementById('ag-titel').value,
+            onderwerp: document.getElementById('ag-onderwerp').value, timestamp: d.getTime()
         });
-        alert("Toegevoegd!");
-        // Reset velden
-        document.getElementById('ag-titel').value = "";
-        document.getElementById('ag-onderwerp').value = "";
+        alert("Opgeslagen!");
     };
 
     document.getElementById('btn-save-med').onclick = async () => {
@@ -90,12 +87,11 @@ if (document.getElementById('admin-agenda-list')) {
     };
 }
 
-// --- DISPLAY LOGICA (Voor index.html) ---
+// --- DISPLAY LOGICA (index.html) ---
 if (document.getElementById('agenda-content')) {
     let activePages = ['page-agenda', 'page-rooster'];
     let currentIndex = 0;
 
-    // Agenda tonen
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let html = '';
         snap.forEach(doc => {
@@ -105,7 +101,6 @@ if (document.getElementById('agenda-content')) {
         document.getElementById('agenda-content').innerHTML = html;
     });
 
-    // Rooster tonen
     onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
@@ -114,7 +109,6 @@ if (document.getElementById('agenda-content')) {
         }
     });
 
-    // Mededeling check
     onSnapshot(doc(db, "content", "mededeling"), (docSnap) => {
         const tekst = docSnap.data()?.tekst;
         if (tekst && tekst.trim() !== "") {
@@ -125,10 +119,12 @@ if (document.getElementById('agenda-content')) {
         }
     });
 
-    // Pagina wissel
     setInterval(() => {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const pages = document.querySelectorAll('.page');
+        if (pages.length === 0) return;
+        pages.forEach(p => p.classList.remove('active'));
         currentIndex = (currentIndex + 1) % activePages.length;
-        document.getElementById(activePages[currentIndex]).classList.add('active');
+        const nextPage = document.getElementById(activePages[currentIndex]);
+        if (nextPage) nextPage.classList.add('active');
     }, 15000);
 }

@@ -9,18 +9,20 @@
 <body class="admin-body" id="is-admin-page">
     <div class="admin-container">
         
-        <div id="login-form" class="admin-section">
-            <h2 style="text-align: center;">Inloggen</h2>
+        <!-- Login Formulier -->
+        <div id="login-form" class="admin-section" style="display: block;">
+            <h2 style="text-align: center;">WVM Beheer</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
         </div>
 
+        <!-- Beheer Content -->
         <div id="admin-content" style="display: none;">
             <div class="admin-section">
-                <h2>Klok op scherm</h2>
+                <h2>Klok Switch</h2>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <span>Klok tonen</span>
+                    <span>Klok tonen op TV</span>
                     <label class="switch">
                         <input type="checkbox" id="klok-switch">
                         <span class="slider"></span>
@@ -29,12 +31,12 @@
             </div>
 
             <div class="admin-section">
-                <h2>Agenda</h2>
+                <h2>Agenda Item</h2>
                 <input type="date" id="ag-datum">
                 <input type="text" id="ag-titel" placeholder="Titel">
                 <input type="text" id="ag-onderwerp" placeholder="Onderwerp">
                 <button id="btn-save-agenda" class="main-btn">Toevoegen</button>
-                <div id="admin-agenda-list" style="margin-top:10px;"></div>
+                <div id="admin-agenda-list" style="margin-top:15px;"></div>
             </div>
 
             <div class="admin-section">
@@ -52,7 +54,7 @@
                 <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
             </div>
             
-            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer;">Uitloggen</button>
+            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer; font-weight:bold;">Uitloggen</button>
         </div>
     </div>
     <script type="module" src="script.js"></script>

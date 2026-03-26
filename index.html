@@ -2,19 +2,23 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WVM Informatiescherm</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <img src="logo.png" class="logo" alt="Logo">
+    <!-- Zorg dat logo.png in je GitHub map staat! -->
+    <img src="logo.png" class="logo" alt="Watervrienden Logo">
 
-    <!-- Pagina 1: Agenda -->
+    <!-- Scherm 1: Agenda -->
     <div id="page-agenda" class="page active">
-        <h1 class="title">Watervrienden Maastricht</h1>
-        <div id="agenda-content"></div>
+        <h1 class="title">Watervrienden<br>Maastricht</h1>
+        <div id="agenda-content">
+            <!-- Hier komt de data uit Firebase -->
+        </div>
     </div>
 
-    <!-- Pagina 2: Rooster -->
+    <!-- Scherm 2: Rooster -->
     <div id="page-rooster" class="page">
         <div class="rooster-container">
             <div class="column">
@@ -23,12 +27,12 @@
             </div>
             <div class="column">
                 <h2>Wedstrijdbad:</h2>
-                <div id="rooster-wedstrijd"></div>
+                <div id="rooster-wedstrijdbad"></div>
             </div>
         </div>
     </div>
 
-    <!-- Pagina 3: Mededeling (Alleen zichtbaar indien gevuld) -->
+    <!-- Scherm 3: Mededeling -->
     <div id="page-announcement" class="page">
         <div class="announcement-box">
             <h1>BELANGRIJK</h1>

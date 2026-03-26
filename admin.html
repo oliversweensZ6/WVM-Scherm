@@ -10,31 +10,38 @@
     <div class="admin-container">
         
         <div id="login-form" class="admin-section">
-            <h2 style="text-align: center;">WVM Beheer</h2>
+            <h2 style="text-align: center;">Inloggen</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
         </div>
 
         <div id="admin-content" style="display: none;">
+            
+            <!-- SYSTEEM MODUS -->
             <div class="admin-section">
-                <h2>Schermen beheren</h2>
+                <h2>Systeem Modus</h2>
                 <div class="switch-row">
-                    <span>Kleine klok (hoek)</span>
-                    <label class="switch"><input type="checkbox" id="klok-switch"><span class="slider"></span></label>
+                    <span>Grote Klok Modus (Exclusief)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="groot-klok-mode-switch">
+                        <span class="slider"></span>
+                    </label>
                 </div>
+                <p style="font-size: 12px; color: #666;">AAN: Alleen de grote klok tonen.<br>UIT: Agenda/Rooster rotatie tonen.</p>
+                <hr>
                 <div class="switch-row">
-                    <span>Grote klok scherm</span>
-                    <label class="switch"><input type="checkbox" id="groot-klok-switch"><span class="slider"></span></label>
-                </div>
-                <div class="switch-row">
-                    <span>Mededeling scherm</span>
-                    <label class="switch"><input type="checkbox" id="med-switch"><span class="slider"></span></label>
+                    <span>Kleine klok (hoek) tonen</span>
+                    <label class="switch">
+                        <input type="checkbox" id="klok-switch">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
 
+            <!-- AGENDA -->
             <div class="admin-section">
-                <h2>Agenda Item</h2>
+                <h2>Agenda</h2>
                 <input type="date" id="ag-datum">
                 <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
                 <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
@@ -42,12 +49,20 @@
                 <div id="admin-agenda-list" style="margin-top:15px;"></div>
             </div>
 
+            <!-- MEDEDELING -->
             <div class="admin-section">
-                <h2>Mededeling Tekst</h2>
+                <div class="switch-row">
+                    <h2>Huishoudelijke mededeling</h2>
+                    <label class="switch">
+                        <input type="checkbox" id="med-switch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <textarea id="med-tekst" rows="3" placeholder="Typ hier de tekst..."></textarea>
                 <button id="btn-save-med" class="main-btn">Tekst Opslaan</button>
             </div>
 
+            <!-- ROOSTER -->
             <div class="admin-section">
                 <h2>Lesrooster</h2>
                 <textarea id="rooster-zorg" rows="4" placeholder="Zorgbad..."></textarea>

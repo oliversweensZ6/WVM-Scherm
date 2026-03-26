@@ -8,34 +8,40 @@
 <body class="admin-body">
     <h1>WVM Schermbeheer</h1>
 
+    <!-- Agenda -->
     <div class="admin-section">
-        <h2>1. Agenda Item Toevoegen</h2>
+        <h2>1. Agenda Beheren</h2>
+        <div id="admin-agenda-list">Laden...</div>
+        <hr>
+        <h3>Nieuw item toevoegen:</h3>
         <input type="date" id="ag-datum">
         <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
         <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
-        <button id="btn-save-agenda">Voeg toe aan lijst</button>
-        <div id="admin-agenda-list" style="margin-top:20px;"></div>
+        <button id="btn-save-agenda" class="main-btn">Voeg toe aan lijst</button>
     </div>
 
+    <!-- Mededeling -->
     <div class="admin-section">
         <h2>2. Mededeling</h2>
-        <textarea id="med-tekst" rows="3" placeholder="Typ hier de belangrijke mededeling..."></textarea>
-        <button id="btn-save-med">Mededeling bijwerken</button>
+        <p>Huidige tekst (leegmaken om te verbergen):</p>
+        <textarea id="med-tekst" rows="3"></textarea>
+        <button id="btn-save-med" class="main-btn">Update Mededeling</button>
     </div>
 
+    <!-- Rooster -->
     <div class="admin-section">
-        <h2>3. Rooster Aanpassen</h2>
+        <h2>3. Lesrooster</h2>
         <div style="display:flex; gap:20px;">
             <div style="flex:1;">
                 <h3>Zorgbad</h3>
-                <textarea id="rooster-zorg" rows="8" placeholder="Eén regel per tijdstip..."></textarea>
+                <textarea id="rooster-zorg" rows="10" placeholder="Eén tijdstip per regel..."></textarea>
             </div>
             <div style="flex:1;">
                 <h3>Wedstrijdbad</h3>
-                <textarea id="rooster-wed" rows="8" placeholder="Eén regel per tijdstip..."></textarea>
+                <textarea id="rooster-wed" rows="10" placeholder="Eén tijdstip per regel..."></textarea>
             </div>
         </div>
-        <button id="btn-save-rooster">Rooster Opslaan</button>
+        <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
     </div>
 
     <script type="module" src="script.js"></script>

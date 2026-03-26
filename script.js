@@ -15,52 +15,42 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ==========================================
-// ADMIN LOGICA & AUTH
-// ==========================================
+// ADMIN LOGICA
 if (document.getElementById('login-form')) {
     const loginDiv = document.getElementById('login-form');
     const adminDiv = document.getElementById('admin-content');
 
-    // Inloggen functie
-    document.getElementById('btn-login').onclick = async () => {
-        const email = document.getElementById('login-email').value;
-        const pass = document.getElementById('login-pass').value;
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-        } catch (error) {
-            alert("Fout bij inloggen: " + error.message);
-        }
-    };
-
-    // Check of gebruiker is ingelogd
     onAuthStateChanged(auth, (user) => {
         if (user) {
             loginDiv.style.display = 'none';
             adminDiv.style.display = 'block';
-            laadData(); // Functie om admin data te vullen
+            laadAdminData();
         } else {
             loginDiv.style.display = 'block';
             adminDiv.style.display = 'none';
         }
     });
 
-    // Uitloggen
+    document.getElementById('btn-login').onclick = async () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        try { await signInWithEmailAndPassword(auth, email, pass); } 
+        catch (e) { alert("Inloggen mislukt: " + e.message); }
+    };
+
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    function laadData() {
-        // Agenda lijst live
+    function laadAdminData() {
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
-            let html = '';
+            let h = '';
             snap.forEach(d => {
-                html += `<div class="admin-item"><span>${d.data().datum}: ${d.data().titel}</span>
-                        <button class="btn-delete" data-id="${d.id}">X</button></div>`;
+                h += `<div class="admin-item"><span>${d.data().datum}: ${d.data().titel}</span>
+                     <button class="btn-delete" data-id="${d.id}">X</button></div>`;
             });
-            document.getElementById('admin-agenda-list').innerHTML = html;
+            document.getElementById('admin-agenda-list').innerHTML = h;
             document.querySelectorAll('.btn-delete').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
 
-        // Prefill velden
         onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
         onSnapshot(doc(db, "content", "rooster"), d => { 
             if(d.exists()) {
@@ -70,26 +60,26 @@ if (document.getElementById('login-form')) {
         });
     }
 
-    // Opslaan acties (Zelfde als voorheen)
     document.getElementById('btn-save-agenda').onclick = async () => {
-        const d = new Date(document.getElementById('ag-datum').value);
+        const val = document.getElementById('ag-datum').value;
+        if(!val) return alert("Kies datum");
+        const d = new Date(val);
         await addDoc(collection(db, "agenda"), {
             datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
         });
-        alert("Toegevoegd!");
+        alert("Opgeslagen");
     };
+
     document.getElementById('btn-save-med').onclick = () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
     document.getElementById('btn-save-rooster').onclick = () => setDoc(doc(db, "content", "rooster"), { 
         zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value 
     });
 }
 
-// ==========================================
-// TV SCHERM LOGICA (index.html)
-// ==========================================
+// TV LOGICA (index.html)
 if (document.getElementById('agenda-content')) {
     let activePages = ['page-agenda', 'page-rooster'];
     let currentIndex = 0;

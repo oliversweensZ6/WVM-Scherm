@@ -4,12 +4,10 @@ import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, order
 const firebaseConfig = {
   apiKey: "AIzaSyAvb1RTOvNSMuRvIntSUPQKoI-mdPBlhcA",
   authDomain: "wvm-scherm.firebaseapp.com",
-  databaseURL: "https://wvm-scherm-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "wvm-scherm",
   storageBucket: "wvm-scherm.firebasestorage.app",
   messagingSenderId: "916379881435",
-  appId: "1:916379881435:web:8e1cc130766e460bdca1fe",
-  measurementId: "G-Z6FES6DGSV"
+  appId: "1:916379881435:web:8e1cc130766e460bdca1fe"
 };
 
 const app = initializeApp(firebaseConfig);

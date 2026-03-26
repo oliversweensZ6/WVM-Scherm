@@ -8,7 +8,7 @@ const firebaseConfig = {
   projectId: "wvm-scherm",
   storageBucket: "wvm-scherm.firebasestorage.app",
   messagingSenderId: "916379881435",
-  appId: "1:916379881435:web:8e1cc130766e460bdca1fe"
+  appId: "1:916379881435:web:8e1cc130766e460bdca1fe",
   measurementId: "G-Z6FES6DGSV"
 };
 

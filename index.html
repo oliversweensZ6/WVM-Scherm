@@ -2,13 +2,38 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>WVM Scherm</title>
+    <title>WVM Informatiescherm</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="screen-bg">
-    <div id="app">
-        <!-- De content wordt hier geladen door script.js -->
-        <div id="content-area"></div>
+<body>
+    <img src="logo.png" class="logo" alt="Logo">
+
+    <!-- Pagina 1: Agenda -->
+    <div id="page-agenda" class="page active">
+        <h1 class="title">Watervrienden Maastricht</h1>
+        <div id="agenda-content"></div>
+    </div>
+
+    <!-- Pagina 2: Rooster -->
+    <div id="page-rooster" class="page">
+        <div class="rooster-container">
+            <div class="column">
+                <h2>Zorgbad:</h2>
+                <div id="rooster-zorgbad"></div>
+            </div>
+            <div class="column">
+                <h2>Wedstrijdbad:</h2>
+                <div id="rooster-wedstrijd"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagina 3: Mededeling (Alleen zichtbaar indien gevuld) -->
+    <div id="page-announcement" class="page">
+        <div class="announcement-box">
+            <h1>BELANGRIJK</h1>
+            <p id="announcement-text"></p>
+        </div>
     </div>
 
     <script type="module" src="script.js"></script>

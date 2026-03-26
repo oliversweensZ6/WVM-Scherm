@@ -15,7 +15,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ADMIN LOGICA
+// --- KLOK FUNCTIE ---
+function startKlok() {
+    const klokEl = document.getElementById('klok-container');
+    if (klokEl) {
+        setInterval(() => {
+            const nu = new Date();
+            klokEl.innerText = nu.toLocaleTimeString('nl-NL', { hour12: false });
+        }, 1000);
+    }
+}
+startKlok();
+
+// --- ADMIN LOGICA ---
 if (document.getElementById('login-form')) {
     const loginDiv = document.getElementById('login-form');
     const adminDiv = document.getElementById('admin-content');
@@ -35,13 +47,12 @@ if (document.getElementById('login-form')) {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
         try { await signInWithEmailAndPassword(auth, email, pass); } 
-        catch (e) { alert("Inloggen mislukt: Probeer het opnieuw."); }
+        catch (e) { alert("Inloggegevens incorrect"); }
     };
 
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
     function laadAdminData() {
-        // Live Agenda met sortering
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
             let h = '';
             snap.forEach(d => {
@@ -59,44 +70,41 @@ if (document.getElementById('login-form')) {
                 document.getElementById('rooster-wed').value = d.data().wedstrijdbad;
             }
         });
+        onSnapshot(doc(db, "content", "instellingen"), d => { if(d.exists()) document.getElementById('klok-toggle').checked = d.data().toonKlok; });
     }
 
     document.getElementById('btn-save-agenda').onclick = async () => {
         const val = document.getElementById('ag-datum').value;
-        if(!val) return alert("Kies datum");
-        const d = new Date(val);
-        d.setHours(0,0,0,0); // Sorteren op dag-niveau
-
+        if(!val) return alert("Datum verplicht");
+        const d = new Date(val); d.setHours(0,0,0,0);
         await addDoc(collection(db, "agenda"), {
             datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
         });
-        alert("Opgeslagen en gesorteerd!");
-        document.getElementById('ag-titel').value = "";
-        document.getElementById('ag-onderwerp').value = "";
+        document.getElementById('ag-titel').value = ""; document.getElementById('ag-onderwerp').value = "";
     };
 
     document.getElementById('btn-save-med').onclick = () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
     document.getElementById('btn-save-rooster').onclick = () => setDoc(doc(db, "content", "rooster"), { 
         zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value 
     });
+    document.getElementById('btn-save-settings').onclick = () => setDoc(doc(db, "content", "instellingen"), { toonKlok: document.getElementById('klok-toggle').checked });
 }
 
-// TV LOGICA (index.html)
+// --- DISPLAY LOGICA (index.html) ---
 if (document.getElementById('agenda-content')) {
     let activePages = ['page-agenda', 'page-rooster'];
     let currentIndex = 0;
 
-    // Agenda tonen met automatische datum sortering
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
-        let html = '';
+        let h = '';
         snap.forEach(doc => {
-            const data = doc.data();
-            html += `<div class="agenda-item"><span class="date">${data.datum}</span> <span>${data.titel} - ${data.onderwerp}</span></div>`;
+            const d = doc.data();
+            h += `<div class="agenda-item"><span class="date">${d.datum}</span> <span>${d.titel} - ${d.onderwerp}</span></div>`;
         });
-        document.getElementById('agenda-content').innerHTML = html;
+        document.getElementById('agenda-content').innerHTML = h;
     });
 
     onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
@@ -115,6 +123,12 @@ if (document.getElementById('agenda-content')) {
         } else {
             activePages = activePages.filter(p => p !== 'page-announcement');
         }
+    });
+
+    onSnapshot(doc(db, "content", "instellingen"), (docSnap) => {
+        const klok = document.getElementById('klok-container');
+        if (docSnap.exists() && docSnap.data().toonKlok) klok.style.display = 'block';
+        else klok.style.display = 'none';
     });
 
     setInterval(() => {

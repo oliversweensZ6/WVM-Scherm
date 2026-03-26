@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAvb1RTOvNSMuRvIntSUPQKoI-mdPBlhcA",
@@ -12,76 +13,82 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // ==========================================
-// ADMIN LOGICA
+// ADMIN LOGICA & AUTH
 // ==========================================
-if (document.getElementById('admin-agenda-list')) {
-    
-    // EENVOUDIG WACHTWOORD CHECK
-    const pass = prompt("Voer het beheer-wachtwoord in:");
-    if (pass !== "WVM2024") { // PAS HIER JE WACHTWOORD AAN
-        alert("Verkeerd wachtwoord. Je wordt teruggestuurd.");
-        window.location.href = "index.html";
-    }
+if (document.getElementById('login-form')) {
+    const loginDiv = document.getElementById('login-form');
+    const adminDiv = document.getElementById('admin-content');
 
-    // Live Agenda
-    onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
-        let html = '';
-        snap.forEach(docSnap => {
-            const d = docSnap.data();
-            html += `<div class="admin-item">
-                        <span><strong>${d.datum}</strong>: ${d.titel}</span>
-                        <button class="btn-delete" data-id="${docSnap.id}">Verwijder</button>
-                    </div>`;
-        });
-        document.getElementById('admin-agenda-list').innerHTML = html || 'Geen items.';
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.onclick = async () => { if(confirm("Verwijderen?")) await deleteDoc(doc(db, "agenda", btn.dataset.id)); };
-        });
-    });
+    // Inloggen functie
+    document.getElementById('btn-login').onclick = async () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch (error) {
+            alert("Fout bij inloggen: " + error.message);
+        }
+    };
 
-    // Prefill Mededeling & Rooster
-    onSnapshot(doc(db, "content", "mededeling"), (docSnap) => {
-        if (docSnap.exists()) document.getElementById('med-tekst').value = docSnap.data().tekst;
-    });
-    onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
-        if (docSnap.exists()) {
-            document.getElementById('rooster-zorg').value = docSnap.data().zorgbad;
-            document.getElementById('rooster-wed').value = docSnap.data().wedstrijdbad;
+    // Check of gebruiker is ingelogd
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            loginDiv.style.display = 'none';
+            adminDiv.style.display = 'block';
+            laadData(); // Functie om admin data te vullen
+        } else {
+            loginDiv.style.display = 'block';
+            adminDiv.style.display = 'none';
         }
     });
 
-    // Opslaan
+    // Uitloggen
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
+
+    function laadData() {
+        // Agenda lijst live
+        onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
+            let html = '';
+            snap.forEach(d => {
+                html += `<div class="admin-item"><span>${d.data().datum}: ${d.data().titel}</span>
+                        <button class="btn-delete" data-id="${d.id}">X</button></div>`;
+            });
+            document.getElementById('admin-agenda-list').innerHTML = html;
+            document.querySelectorAll('.btn-delete').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
+        });
+
+        // Prefill velden
+        onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
+        onSnapshot(doc(db, "content", "rooster"), d => { 
+            if(d.exists()) {
+                document.getElementById('rooster-zorg').value = d.data().zorgbad;
+                document.getElementById('rooster-wed').value = d.data().wedstrijdbad;
+            }
+        });
+    }
+
+    // Opslaan acties (Zelfde als voorheen)
     document.getElementById('btn-save-agenda').onclick = async () => {
-        const dVal = document.getElementById('ag-datum').value;
-        if(!dVal) return alert("Kies een datum");
-        const d = new Date(dVal);
+        const d = new Date(document.getElementById('ag-datum').value);
         await addDoc(collection(db, "agenda"), {
-            datum: d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }).toUpperCase(),
+            datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'short'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
         });
-        alert("Opgeslagen!");
+        alert("Toegevoegd!");
     };
-
-    document.getElementById('btn-save-med').onclick = async () => {
-        await setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
-        alert("Mededeling bijgewerkt!");
-    };
-
-    document.getElementById('btn-save-rooster').onclick = async () => {
-        await setDoc(doc(db, "content", "rooster"), {
-            zorgbad: document.getElementById('rooster-zorg').value,
-            wedstrijdbad: document.getElementById('rooster-wed').value
-        });
-        alert("Rooster bijgewerkt!");
-    };
+    document.getElementById('btn-save-med').onclick = () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value });
+    document.getElementById('btn-save-rooster').onclick = () => setDoc(doc(db, "content", "rooster"), { 
+        zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value 
+    });
 }
 
 // ==========================================
-// SCHERM LOGICA
+// TV SCHERM LOGICA (index.html)
 // ==========================================
 if (document.getElementById('agenda-content')) {
     let activePages = ['page-agenda', 'page-rooster'];
@@ -117,7 +124,6 @@ if (document.getElementById('agenda-content')) {
     setInterval(() => {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         currentIndex = (currentIndex + 1) % activePages.length;
-        const nextPage = document.getElementById(activePages[currentIndex]);
-        if(nextPage) nextPage.classList.add('active');
+        document.getElementById(activePages[currentIndex]).classList.add('active');
     }, 15000);
 }

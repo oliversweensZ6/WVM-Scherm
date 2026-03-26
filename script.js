@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klok update
+// Klok update logic
 setInterval(() => {
     const el = document.getElementById('klok-container');
     if (el) el.innerText = new Date().toLocaleTimeString('nl-NL', { hour12: false });
@@ -84,7 +84,6 @@ if (document.getElementById('is-admin-page')) {
         if(!val) return alert("Datum verplicht");
         const d = new Date(val); d.setHours(0,0,0,0);
         addDoc(collection(db, "agenda"), {
-            // Nu met 'long' voor de volledige maandnaam
             datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'long'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,

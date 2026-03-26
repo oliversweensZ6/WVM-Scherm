@@ -1,31 +1,58 @@
-body.screen-bg {
-    background: radial-gradient(circle, #2b4691 0%, #1a2a5a 100%);
-    color: white;
-    font-family: Arial, sans-serif;
+body {
     margin: 0;
     overflow: hidden;
+    background: radial-gradient(circle at center, #2b4b9b 0%, #162650 100%);
+    color: white;
+    font-family: 'Arial', sans-serif;
     height: 100vh;
-    padding: 50px;
 }
 
-.agenda-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.row {
-    display: flex;
-    font-size: 2.5rem; /* Lekker groot voor op TV */
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 0;
-}
-
-.col-date {
+.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     width: 250px;
-    font-weight: bold;
 }
 
-/* Voor de admin pagina */
-.admin-body { font-family: sans-serif; padding: 20px; background: #f0f0f0; color: #333; }
-input { padding: 10px; margin: 5px; }
+.page {
+    display: none;
+    padding: 80px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.page.active { display: block; }
+
+.title {
+    color: #ff0000; /* Rood zoals in je foto */
+    font-size: 5rem;
+    margin-bottom: 50px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.agenda-item {
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+    display: flex;
+    gap: 40px;
+}
+
+.date { font-weight: bold; width: 200px; }
+
+.rooster-container {
+    display: flex;
+    justify-content: space-between;
+    font-size: 2rem;
+}
+
+.column { width: 45%; }
+.column h2 { border-bottom: 2px solid white; }
+
+.announcement-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 5px solid red;
+    padding: 50px;
+    text-align: center;
+    margin-top: 100px;
+    border-radius: 20px;
+}

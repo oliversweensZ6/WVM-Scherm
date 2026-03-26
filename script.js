@@ -27,35 +27,29 @@ setInterval(() => {
 // --- 1. ADMIN LOGICA ---
 if (document.getElementById('is-admin-page')) {
     onAuthStateChanged(auth, (user) => {
-        const loginDiv = document.getElementById('login-form');
-        const adminDiv = document.getElementById('admin-content');
         if (user) {
-            if(loginDiv) loginDiv.style.display = 'none';
-            if(adminDiv) adminDiv.style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
             laadData();
         } else {
-            if(loginDiv) loginDiv.style.display = 'block';
-            if(adminDiv) adminDiv.style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('admin-content').style.display = 'none';
         }
     });
 
     document.getElementById('btn-login')?.addEventListener('click', () => {
-        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert(e.message));
+        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert("Fout: " + e.message));
     });
-
     document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
     function laadData() {
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
             let h = '';
-            snap.forEach(d => {
-                h += `<div class="admin-item"><span>${d.data().datum}</span><button class="btn-del" data-id="${d.id}">X</button></div>`;
-            });
+            snap.forEach(d => { h += `<div class="admin-item"><span>${d.data().datum}</span><button class="btn-del" data-id="${d.id}">X</button></div>`; });
             document.getElementById('admin-agenda-list').innerHTML = h;
             document.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
 
-        // Prefill velden en switches
         onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
         onSnapshot(doc(db, "content", "rooster"), d => { 
             if(d.exists()) {
@@ -66,7 +60,7 @@ if (document.getElementById('is-admin-page')) {
         onSnapshot(doc(db, "content", "instellingen"), d => { 
             if(d.exists()) {
                 document.getElementById('klok-switch').checked = d.data().toonKlokKleine || false;
-                document.getElementById('groot-klok-switch').checked = d.data().toonKlokScherm || false;
+                document.getElementById('groot-klok-mode-switch').checked = d.data().alleenGroteKlok || false;
                 document.getElementById('med-switch').checked = d.data().toonMededelingScherm || false;
             }
         });
@@ -74,7 +68,7 @@ if (document.getElementById('is-admin-page')) {
 
     // Switches direct opslaan
     document.getElementById('klok-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKlokKleine: e.target.checked }, { merge: true }));
-    document.getElementById('groot-klok-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKlokScherm: e.target.checked }, { merge: true }));
+    document.getElementById('groot-klok-mode-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { alleenGroteKlok: e.target.checked }, { merge: true }));
     document.getElementById('med-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonMededelingScherm: e.target.checked }, { merge: true }));
 
     document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
@@ -86,11 +80,14 @@ if (document.getElementById('is-admin-page')) {
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
+        }).then(() => {
+            document.getElementById('ag-titel').value = "";
+            document.getElementById('ag-onderwerp').value = "";
         });
     });
 
-    document.getElementById('btn-save-med')?.addEventListener('click', () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }));
-    document.getElementById('btn-save-rooster')?.addEventListener('click', () => setDoc(doc(db, "content", "rooster"), { zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value }));
+    document.getElementById('btn-save-med')?.addEventListener('click', () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }).then(() => alert("Tekst opgeslagen")));
+    document.getElementById('btn-save-rooster')?.addEventListener('click', () => setDoc(doc(db, "content", "rooster"), { zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value }).then(() => alert("Rooster opgeslagen")));
 }
 
 // --- 2. TV LOGICA ---
@@ -101,7 +98,6 @@ if (displayAgenda) {
     let config = {};
     let medTekst = "";
 
-    // Data ophalen
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let h = '';
         snap.forEach(doc => { h += `<div class="agenda-item"><span class="date">${doc.data().datum}</span> <span>${doc.data().titel}</span></div>`; });
@@ -123,13 +119,20 @@ if (displayAgenda) {
     onSnapshot(doc(db, "content", "instellingen"), (docSnap) => {
         config = docSnap.data() || {};
         document.getElementById('klok-container').style.display = config.toonKlokKleine ? 'block' : 'none';
+        
+        // Als Grote Klok Modus aan staat, forceer die pagina direct
+        if (config.alleenGroteKlok) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-klok-groot').classList.add('active');
+        }
     });
 
     // Rotatie Systeem
     setInterval(() => {
+        if (config.alleenGroteKlok) return; // Stop rotatie als klok-modus aan staat
+
         let rotation = [...basePages];
         if (config.toonMededelingScherm && medTekst.trim() !== "") rotation.push('page-announcement');
-        if (config.toonKlokScherm) rotation.push('page-klok-groot');
 
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         currentIndex = (currentIndex + 1) % rotation.length;

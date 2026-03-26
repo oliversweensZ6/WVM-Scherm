@@ -15,13 +15,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klok update logic
+// Klokken updaten
 setInterval(() => {
     const t = new Date().toLocaleTimeString('nl-NL', { hour12: false });
-    const klokKleine = document.getElementById('klok-container');
-    const klokGrote = document.getElementById('grote-klok-tijd');
-    if (klokKleine) klokKleine.innerText = t;
-    if (klokGrote) klokGrote.innerText = t;
+    const kK = document.getElementById('klok-container');
+    const kG = document.getElementById('grote-klok-tijd');
+    if (kK) kK.innerText = t;
+    if (kG) kG.innerText = t;
 }, 1000);
 
 // --- 1. ADMIN LOGICA ---
@@ -104,15 +104,25 @@ if (displayAgenda) {
 
     function startRotatie(sec) {
         if(rotTimer) clearInterval(rotTimer);
+        const dwellTime = (sec || 15) * 1000;
+        
         rotTimer = setInterval(() => {
             if(config.alleenGroteKlok) return;
+            
             let rot = [...basePages];
             if(config.toonMededelingScherm && medTekst.trim() !== "") rot.push('page-announcement');
+            
+            // Verwijder active klasse van alle pagina's
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            // Bereken volgende pagina
             currentIndex = (currentIndex + 1) % rot.length;
             const next = document.getElementById(rot[currentIndex]);
+            
+            // CSS handelt de fade-in van 1.5s nu automatisch af
             if(next) next.classList.add('active');
-        }, (sec || 15) * 1000);
+            
+        }, dwellTime);
     }
 
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
@@ -139,8 +149,7 @@ if (displayAgenda) {
         
         if(config.alleenGroteKlok) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const grKlokPage = document.getElementById('page-klok-groot');
-            if(grKlokPage) grKlokPage.classList.add('active');
+            document.getElementById('page-klok-groot').classList.add('active');
         } else if(oud !== config.intervalTijd) {
             startRotatie(config.intervalTijd);
         }

@@ -7,18 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Het Logo -->
     <img src="logo.png" class="logo" alt="Watervrienden Maastricht">
 
-    <!-- Pagina 1: Agenda -->
     <div id="page-agenda" class="page active">
         <h1 class="title">Watervrienden<br>Maastricht</h1>
-        <div id="agenda-content">
-            <!-- Data uit Firebase komt hier -->
-        </div>
+        <div id="agenda-content"></div>
     </div>
 
-    <!-- Pagina 2: Lesrooster -->
     <div id="page-rooster" class="page">
         <h1 class="title" style="font-size: 80px; margin-top: -60px;">Lesrooster</h1>
         <div class="rooster-container">
@@ -33,15 +28,13 @@
         </div>
     </div>
 
-    <!-- Pagina 3: Mededeling -->
     <div id="page-announcement" class="page">
         <div class="announcement-container">
-            <div class="ann-header">Huishoudelijke mededeling</div>
+            <div class="ann-header">Mededeling</div>
             <div id="announcement-text" class="ann-text"></div>
         </div>
     </div>
 
-    <!-- Digitale Klok -->
     <div id="klok-container" class="klok">00:00:00</div>
 
     <script type="module" src="script.js"></script>

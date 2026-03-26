@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAvb1RTOvNSMuRvIntSUPQKoI-mdPBlhcA",
@@ -7,44 +7,66 @@ const firebaseConfig = {
   projectId: "wvm-scherm",
   storageBucket: "wvm-scherm.firebasestorage.app",
   messagingSenderId: "916379881435",
-  appId: "1:916379881435:web:8e1cc130766e460bdca1fe",
-  measurementId: "G-Z6FES6DGSV"
+  appId: "1:916379881435:web:8e1cc130766e460bdca1fe"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- ADMIN LOGICA ---
+// --- ADMIN FUNCTIES ---
 if (document.getElementById('btn-save-agenda')) {
-    const btn = document.getElementById('btn-save-agenda');
-    btn.onclick = async () => {
+    document.getElementById('btn-save-agenda').onclick = async () => {
+        const rawDate = new Date(document.getElementById('ag-datum').value);
+        const options = { day: 'numeric', month: 'short' };
+        const datumStr = rawDate.toLocaleDateString('nl-NL', options).toUpperCase();
+
         await addDoc(collection(db, "agenda"), {
-            datum: document.getElementById('ag-datum').value,
+            datum: datumStr,
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
-            timestamp: Date.now()
+            sortDate: rawDate
         });
-        alert("Toegevoegd!");
-        location.reload();
+        alert("Opgeslagen!");
+    };
+
+    document.getElementById('btn-save-mededeling').onclick = async () => {
+        await setDoc(doc(db, "instellingen", "mededeling"), {
+            tekst: document.getElementById('mededeling-tekst').value
+        });
+        alert("Mededeling bijgewerkt!");
     };
 }
 
-// --- DISPLAY LOGICA (INDEX) ---
-if (document.getElementById('content-area')) {
-    const contentArea = document.getElementById('content-area');
-    
-    // Luister live naar updates in de database
-    onSnapshot(collection(db, "agenda"), (snapshot) => {
-        let html = '<div class="agenda-grid">';
-        snapshot.forEach((doc) => {
+// --- DISPLAY FUNCTIES ---
+if (document.getElementById('agenda-content')) {
+    let pages = ['page-agenda', 'page-rooster'];
+    let currentPageIndex = 0;
+
+    // Haal Agenda op
+    onSnapshot(query(collection(db, "agenda"), orderBy("sortDate")), (snapshot) => {
+        let html = '';
+        snapshot.forEach(doc => {
             const d = doc.data();
-            html += `
-                <div class="row">
-                    <div class="col-date">${d.datum}</div>
-                    <div class="col-text"><strong>${d.titel}</strong> - ${d.onderwerp}</div>
-                </div>`;
+            html += `<div class="agenda-item"><span class="date">${d.datum}</span> <span>${d.titel} - ${d.onderwerp}</span></div>`;
         });
-        html += '</div>';
-        contentArea.innerHTML = html;
+        document.getElementById('agenda-content').innerHTML = html;
     });
+
+    // Haal Mededeling op & check of pagina moet worden toegevoegd
+    onSnapshot(doc(db, "instellingen", "mededeling"), (doc) => {
+        const tekst = doc.data()?.tekst;
+        if (tekst && tekst.trim() !== "") {
+            document.getElementById('announcement-text').innerText = tekst;
+            if (!pages.includes('page-announcement')) pages.push('page-announcement');
+        } else {
+            pages = pages.filter(p => p !== 'page-announcement');
+        }
+    });
+
+    // Wissel-systeem
+    setInterval(() => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        currentPageIndex = (currentPageIndex + 1) % pages.length;
+        document.getElementById(pages[currentPageIndex]).classList.add('active');
+    }, 15000); // Wisselt elke 15 seconden
 }

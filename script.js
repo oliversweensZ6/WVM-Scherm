@@ -15,28 +15,42 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klokken
+// Klok update logic
 setInterval(() => {
     const t = new Date().toLocaleTimeString('nl-NL', { hour12: false });
-    if(document.getElementById('klok-container')) document.getElementById('klok-container').innerText = t;
-    if(document.getElementById('grote-klok-tijd')) document.getElementById('grote-klok-tijd').innerText = t;
+    const klokKleine = document.getElementById('klok-container');
+    const klokGrote = document.getElementById('grote-klok-tijd');
+    if (klokKleine) klokKleine.innerText = t;
+    if (klokGrote) klokGrote.innerText = t;
 }, 1000);
 
-// --- ADMIN ---
+// --- 1. ADMIN LOGICA ---
 if (document.getElementById('is-admin-page')) {
     onAuthStateChanged(auth, (user) => {
-        document.getElementById('login-form').style.display = user ? 'none' : 'block';
-        document.getElementById('admin-content').style.display = user ? 'block' : 'none';
-        if(user) laadData();
+        const loginDiv = document.getElementById('login-form');
+        const adminDiv = document.getElementById('admin-content');
+        if (user) {
+            loginDiv.style.display = 'none';
+            adminDiv.style.display = 'block';
+            laadAdminData();
+        } else {
+            loginDiv.style.display = 'block';
+            adminDiv.style.display = 'none';
+        }
     });
 
-    document.getElementById('btn-login')?.addEventListener('click', () => signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert(e.message)));
+    document.getElementById('btn-login')?.addEventListener('click', () => {
+        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert("Inlog fout"));
+    });
     document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
-    function laadData() {
+    function laadAdminData() {
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
             let h = '';
-            snap.forEach(d => { h += `<div class="admin-item"><span>${d.data().datum}: ${d.data().titel}</span><button class="btn-del" data-id="${d.id}">X</button></div>`; });
+            snap.forEach(d => { 
+                const data = d.data();
+                h += `<div class="admin-item"><span>${data.datum}: ${data.titel}</span><button class="btn-del" data-id="${d.id}">X</button></div>`; 
+            });
             document.getElementById('admin-agenda-list').innerHTML = h;
             document.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
@@ -69,7 +83,7 @@ if (document.getElementById('is-admin-page')) {
 
     document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
         const val = document.getElementById('ag-datum').value;
-        if(!val) return;
+        if(!val) return alert("Selecteer datum");
         const d = new Date(val); d.setHours(0,0,0,0);
         addDoc(collection(db, "agenda"), {
             datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'long'}).toUpperCase(),
@@ -83,7 +97,7 @@ if (document.getElementById('is-admin-page')) {
     document.getElementById('btn-save-rooster')?.addEventListener('click', () => setDoc(doc(db, "content", "rooster"), { zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value }).then(() => alert("Opgeslagen")));
 }
 
-// --- TV ---
+// --- 2. TV LOGICA ---
 const displayAgenda = document.getElementById('agenda-content');
 if (displayAgenda) {
     let basePages = ['page-agenda', 'page-rooster'], currentIndex = 0, config = {}, medTekst = "", rotTimer;
@@ -96,13 +110,17 @@ if (displayAgenda) {
             if(config.toonMededelingScherm && medTekst.trim() !== "") rot.push('page-announcement');
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             currentIndex = (currentIndex + 1) % rot.length;
-            if(document.getElementById(rot[currentIndex])) document.getElementById(rot[currentIndex]).classList.add('active');
+            const next = document.getElementById(rot[currentIndex]);
+            if(next) next.classList.add('active');
         }, (sec || 15) * 1000);
     }
 
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let h = '';
-        snap.forEach(doc => { h += `<div class="agenda-item"><span class="date">${doc.data().datum}</span> <span>${doc.data().titel} ${doc.data().onderwerp ? '- ' + doc.data().onderwerp : ''}</span></div>`; });
+        snap.forEach(doc => { 
+            const d = doc.data();
+            h += `<div class="agenda-item"><span class="date">${d.datum}</span> <span>${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span></div>`; 
+        });
         displayAgenda.innerHTML = h;
     });
 
@@ -116,10 +134,13 @@ if (displayAgenda) {
     onSnapshot(doc(db, "content", "instellingen"), d => {
         const oud = config.intervalTijd;
         config = d.data() || {};
-        document.getElementById('klok-container').style.display = config.toonKlokKleine ? 'block' : 'none';
+        const klokContainer = document.getElementById('klok-container');
+        if(klokContainer) klokContainer.style.display = config.toonKlokKleine ? 'block' : 'none';
+        
         if(config.alleenGroteKlok) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-klok-groot').classList.add('active');
+            const grKlokPage = document.getElementById('page-klok-groot');
+            if(grKlokPage) grKlokPage.classList.add('active');
         } else if(oud !== config.intervalTijd) {
             startRotatie(config.intervalTijd);
         }

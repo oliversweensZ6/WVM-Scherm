@@ -18,7 +18,7 @@ body:not(.admin-body) {
     padding: 180px 80px 40px 80px; 
     box-sizing: border-box; 
     opacity: 0; /* Standaard onzichtbaar */
-    transition: opacity 1.5s ease-in-out; /* De vervaag-tijd (1.5 sec) */
+    transition: opacity 0.8s ease-in-out; /* De vervaag-tijd (0.8 sec) */
     pointer-events: none;
 }
 

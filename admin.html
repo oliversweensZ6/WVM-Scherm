@@ -2,25 +2,54 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>WVM Admin</title>
-    <link rel="stylesheet" href="style.css">
+    <title>WVM Beheer</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        section { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { border-bottom: 2px solid #2b4691; color: #2b4691; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; box-sizing: border-box; }
+        button { background: #2b4691; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
 </head>
-<body class="admin-body">
-    <h1>Beheer Scherm Content</h1>
-    
+<body>
+    <h1>WVM Schermbeheer</h1>
+
+    <!-- Agenda Deel -->
     <section>
         <h2>Agenda Item Toevoegen</h2>
-        <input type="text" id="ag-datum" placeholder="26 OKT">
-        <input type="text" id="ag-titel" placeholder="Proefzwemmen">
-        <input type="text" id="ag-onderwerp" placeholder="Snorkelen & Survival">
+        <input type="date" id="ag-datum">
+        <input type="text" id="ag-titel" placeholder="Bijv: Proefzwemmen">
+        <input type="text" id="ag-onderwerp" placeholder="Bijv: Snorkelen & Survival">
         <button id="btn-save-agenda">Voeg toe aan Agenda</button>
     </section>
 
-    <hr>
-
+    <!-- Mededelingen Deel -->
     <section>
-        <h2>Huidige Agenda</h2>
-        <div id="admin-agenda-lijst"></div>
+        <h2>Belangrijke Mededeling</h2>
+        <p>Laat leeg om de mededeling te verbergen op het scherm.</p>
+        <textarea id="mededeling-tekst" rows="3" placeholder="Typ hier de mededeling..."></textarea>
+        <button id="btn-save-mededeling">Opslaan</button>
+    </section>
+
+    <!-- Rooster Deel -->
+    <section>
+        <h2>Rooster Aanpassen</h2>
+        <div class="grid">
+            <div>
+                <h3>Zorgbad</h3>
+                <input type="text" id="r-z-1" placeholder="08.30 - 09.30 Peuter survival">
+                <input type="text" id="r-z-2" placeholder="09.00 - 09.30 Kleuter survival">
+                <input type="text" id="r-z-3" placeholder="09.30 - 10.00 Groep 1">
+                <!-- Voeg meer velden toe indien nodig -->
+            </div>
+            <div>
+                <h3>Wedstrijdbad</h3>
+                <input type="text" id="r-w-1" placeholder="10.30 - 11.00 Zwemvaardigheid">
+                <input type="text" id="r-w-2" placeholder="11.00 - 11.30 Recreatief">
+            </div>
+        </div>
+        <button id="btn-save-rooster">Rooster Opslaan</button>
     </section>
 
     <script type="module" src="script.js"></script>

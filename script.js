@@ -126,16 +126,17 @@ if (displayAgenda) {
     }
 
     // Bij de TV LOGICA voor Agenda
+    // Zoek in script.js naar het gedeelte van de Agenda (TV LOGICA) en gebruik dit:
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
-        let h = '';
-        snap.forEach(doc => { 
-            const d = doc.data();
-            h += `<div class="agenda-item">
-                    <span class="date">${d.datum}</span> 
-                    <span class="text-part">${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span>
-                  </div>`; 
-        });
-        displayAgenda.innerHTML = h;
+    let h = '';
+    snap.forEach(doc => { 
+        const d = doc.data();
+        h += `<div class="agenda-item">
+                <span class="date">${d.datum}</span> 
+                <span class="text-part">${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span>
+              </div>`; 
+    });
+    displayAgenda.innerHTML = h;
     });
 
     // Bij de TV LOGICA voor Rooster

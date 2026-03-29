@@ -125,19 +125,27 @@ if (displayAgenda) {
         }, dwellTime);
     }
 
+    // Bij de TV LOGICA voor Agenda
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
         let h = '';
         snap.forEach(doc => { 
             const d = doc.data();
-            h += `<div class="agenda-item"><span class="date">${d.datum}</span> <span>${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span></div>`; 
+            h += `<div class="agenda-item">
+                    <span class="date">${d.datum}</span> 
+                    <span class="text-part">${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span>
+                  </div>`; 
         });
         displayAgenda.innerHTML = h;
     });
 
-    onSnapshot(doc(db, "content", "rooster"), d => { if(d.exists()) {
-        document.getElementById('rooster-zorgbad').innerHTML = (d.data().zorgbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
-        document.getElementById('rooster-wedstrijdbad').innerHTML = (d.data().wedstrijdbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
-    }});
+    // Bij de TV LOGICA voor Rooster
+        onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById('rooster-zorgbad').innerHTML = (data.zorgbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
+          document.getElementById('rooster-wedstrijdbad').innerHTML = (data.wedstrijdbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
+        }
+    });
 
     onSnapshot(doc(db, "content", "mededeling"), d => { medTekst = d.data()?.tekst || ""; document.getElementById('announcement-text').innerText = medTekst; });
 

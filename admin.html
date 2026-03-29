@@ -9,31 +9,39 @@
 <body class="admin-body" id="is-admin-page">
     <div class="admin-container">
         
+        <!-- Login Sectie -->
         <div id="login-form" class="admin-section">
-            <h2 style="text-align: center;">Inloggen</h2>
+            <h2 style="text-align: center;">WVM Beheer Inloggen</h2>
             <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Wachtwoord">
             <button id="btn-login" class="main-btn">Inloggen</button>
         </div>
 
+        <!-- Beheer Sectie -->
         <div id="admin-content" style="display: none;">
             
             <div class="admin-section">
                 <h2>Systeem Beheer</h2>
                 <div class="switch-row">
-                    <span>Grote Klok Modus (Exclusief)</span>
-                    <label class="switch"><input type="checkbox" id="groot-klok-mode-switch"><span class="slider"></span></label>
+                    <span>Grote Klok Modus</span>
+                    <label class="switch">
+                        <input type="checkbox" id="groot-klok-mode-switch">
+                        <span class="slider"></span>
+                    </label>
                 </div>
                 <div class="switch-row">
                     <span>Kleine klok (hoek)</span>
-                    <label class="switch"><input type="checkbox" id="klok-switch"><span class="slider"></span></label>
+                    <label class="switch">
+                        <input type="checkbox" id="klok-switch">
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <hr>
-                <div style="margin-top:10px;">
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span>Wisseltijd (sec):</span>
-                    <input type="number" id="interval-tijd" min="5" style="width: 60px; margin-left:10px;">
-                    <button id="btn-save-interval" class="main-btn" style="margin-top:5px;">Tijd Opslaan</button>
+                    <input type="number" id="interval-tijd" min="5" style="width: 70px; margin: 0;">
                 </div>
+                <button id="btn-save-interval" class="main-btn" style="margin-top:10px;">Tijd Opslaan</button>
             </div>
 
             <div class="admin-section">
@@ -47,21 +55,26 @@
 
             <div class="admin-section">
                 <div class="switch-row">
-                    <h2>Huishoudelijke mededeling</h2>
-                    <label class="switch"><input type="checkbox" id="med-switch"><span class="slider"></span></label>
+                    <h2>Mededeling</h2>
+                    <label class="switch">
+                        <input type="checkbox" id="med-switch">
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <textarea id="med-tekst" rows="3" placeholder="Typ hier de tekst..."></textarea>
+                <textarea id="med-tekst" rows="4" placeholder="Tekst voor mededeling..."></textarea>
                 <button id="btn-save-med" class="main-btn">Tekst Opslaan</button>
             </div>
 
             <div class="admin-section">
                 <h2>Lesrooster</h2>
+                <p style="margin:0;">Zorgbad:</p>
                 <textarea id="rooster-zorg" rows="4"></textarea>
+                <p style="margin:10px 0 0 0;">Wedstrijdbad:</p>
                 <textarea id="rooster-wed" rows="4"></textarea>
                 <button id="btn-save-rooster" class="main-btn">Rooster Opslaan</button>
             </div>
             
-            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:10px; cursor:pointer; font-weight:bold;">Uitloggen</button>
+            <button id="btn-logout" style="width:100%; color:red; border:none; background:none; padding:15px; cursor:pointer; font-weight:bold;">Uitloggen</button>
         </div>
     </div>
     <script type="module" src="script.js"></script>

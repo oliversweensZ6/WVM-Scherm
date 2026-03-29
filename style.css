@@ -1,115 +1,68 @@
-/* TV SCHERM STIJLEN */
+/* ==========================================
+   TV SCHERM STIJLEN
+   ========================================== */
 body:not(.admin-body) {
     margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden;
     background: radial-gradient(circle at center, #2b4b9b 0%, #162650 100%);
     color: white; font-family: 'Arial', sans-serif; font-weight: bold;
 }
-.logo { position: absolute; top: 15px; right: 15px; width: 475px; z-index: 1000; }
-.page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 200px 80px 40px 80px; box-sizing: border-box; opacity: 0; transition: opacity 1.5s ease-in-out; pointer-events: none; }
-.page.active { opacity: 1; pointer-events: auto; }
-.title { color: #ff0000; font-size: 130px; margin: 0 0 35px 0; line-height: 1.0; }
 
-/* Agenda text size */
-.agenda-item { font-size: 70px; margin-bottom: 35px; display: flex; align-items: flex-start; }
+.logo { position: absolute; top: 15px; right: 15px; width: 475px; z-index: 1000; }
+
+.page { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    padding: 200px 80px 40px 80px; box-sizing: border-box; 
+    opacity: 0; transition: opacity 1.5s ease-in-out; pointer-events: none; 
+}
+.page.active { opacity: 1; pointer-events: auto; }
+
+/* HOOFDTITEL GROOTTE */
+.title { color: #ff0000; font-size: 120px; margin: 0 0 35px 0; line-height: 1.0; }
+
+/* AGENDA STYLING */
+.agenda-item { 
+    font-size: 66px; /* Agenda text size */
+    margin-bottom: 35px; display: flex; align-items: flex-start; 
+}
 .date { width: 460px; flex-shrink: 0; }
 .text-part { padding-left: 55px; text-indent: -55px; line-height: 1.2; }
-.rooster-container { display: flex; justify-content: flex-start; gap: 50px; margin-top: 20px; }
-.column-left { flex: 0 0 23%; }
-.column-right { flex: 1; }
+
+/* LESROOSTER SPLITSING (35% / 65%) */
+.rooster-container { display: flex; justify-content: flex-start; gap: 40px; margin-top: 20px; width: 100%; }
+.column-left { flex: 0 0 35%; }  /* Zorgbad kolom op 35% */
+.column-right { flex: 0 0 65%; } /* Wedstrijdbad kolom op 65% */
+
 .column h2 { font-size: 77px; border-bottom: 7px solid white; padding-bottom: 12px; margin-bottom: 35px; }
+.rooster-item { font-size: 48px; margin-bottom: 22px; line-height: 1.2; padding-left: 35px; text-indent: -35px; }
 
-/* Rooster text size */
-.rooster-item { font-size: 55px; margin-bottom: 22px; line-height: 1.2; padding-left: 35px; text-indent: -35px; }
+/* HUISHOUDELIJKE MEDEDELING GROOTTE */
 .ann-header { font-size: 100px; color: #ff0000; margin-bottom: 35px; }
-.ann-text { font-size: 45px; line-height: 1.3; max-width: 95%; }
+.ann-text { font-size: 66px; line-height: 1.3; max-width: 95%; }
 
+/* GROTE KLOK MODUS GROOTTE */
 #page-klok-groot { padding: 0; display: none; align-items: center; justify-content: center; }
 #page-klok-groot.active { display: flex; opacity: 1; }
 #grote-klok-tijd { font-size: 385px; color: #add8e6; text-shadow: 10px 10px 20px black; }
-.klok { position: absolute; bottom: 30px; right: 40px; font-size: 120px; color: #add8e6; text-shadow: 4px 4px 8px black; z-index: 1100; }
+
+/* KLEINE KLOK GROOTTE */
+.klok { position: absolute; bottom: 30px; right: 40px; font-size: 110px; color: #add8e6; text-shadow: 4px 4px 8px black; z-index: 1100; }
 
 /* ==========================================
-   ADMIN STIJLEN (Blauwe Aesthetics & Mobiel)
+   ADMIN STIJLEN (Blauw & Compact)
    ========================================== */
-.admin-body { 
-    background: #f0f2f5; 
-    color: #333; 
-    font-family: -apple-system, sans-serif; 
-    padding: 15px; 
-}
-
-.admin-container { 
-    max-width: 480px; 
-    margin: 0 auto; 
-}
-
-.admin-section { 
-    background: white; 
-    padding: 20px; 
-    margin-bottom: 15px; 
-    border-radius: 12px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-}
-
-.admin-body h2 { 
-    font-size: 20px; 
-    color: #2b4b9b; 
-    margin: 0 0 15px 0; 
-}
-
-.admin-body input, .admin-body textarea { 
-    width: 100%; padding: 12px; margin: 8px 0; 
-    border: 2px solid #eee; border-radius: 8px; 
-    font-size: 16px; box-sizing: border-box; 
-}
-
-.admin-body input:focus, .admin-body textarea:focus { 
-    border-color: #2b4b9b; outline: none; 
-}
-
-/* Blauwe knoppen */
-.main-btn { 
-    background: #2b4b9b; 
-    color: white; 
-    border: none; 
-    padding: 15px; 
-    border-radius: 10px; 
-    width: 100%; 
-    cursor: pointer; 
-    font-weight: bold; 
-    font-size: 18px;
-    margin-top: 5px;
-}
-
-.admin-item { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; 
-}
-
-.btn-del { 
-    background: #ff4444; color: white; border: none; 
-    padding: 8px 12px; border-radius: 6px; cursor: pointer; 
-}
-
-/* SCHUIFKOPPEN (Sliders) */
-.switch-row { 
-    display: flex; justify-content: space-between; 
-    align-items: center; margin-bottom: 12px; 
-}
-
+.admin-body { background: #f0f2f5; color: #333; font-family: -apple-system, sans-serif; padding: 15px; }
+.admin-container { max-width: 480px; margin: 0 auto; }
+.admin-section { background: white; padding: 20px; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.admin-body h2 { font-size: 20px; color: #2b4b9b; margin: 0 0 15px 0; }
+.admin-body input, .admin-body textarea { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+.admin-body input:focus, .admin-body textarea:focus { border-color: #2b4b9b; outline: none; }
+.main-btn { background: #2b4b9b; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; font-size: 18px; margin-top: 5px; }
+.admin-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+.btn-del { background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+.switch-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
-
-.slider { 
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
-    background-color: #ccc; transition: .4s; border-radius: 26px; 
-}
-
-.slider:before { 
-    position: absolute; content: ""; height: 18px; width: 18px; 
-    left: 4px; bottom: 4px; background-color: white; 
-    transition: .4s; border-radius: 50%; 
-}
-
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 26px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider { background-color: #2b4b9b; }
 input:checked + .slider:before { transform: translateX(24px); }

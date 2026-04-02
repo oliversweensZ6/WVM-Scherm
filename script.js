@@ -15,16 +15,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klokken updaten
+// Klokken updaten (elke seconde)
 setInterval(() => {
     const t = new Date().toLocaleTimeString('nl-NL', { hour12: false });
-    const kK = document.getElementById('klok-container');
-    const kG = document.getElementById('grote-klok-tijd');
-    if (kK) kK.innerText = t;
-    if (kG) kG.innerText = t;
+    const klokKleine = document.getElementById('klok-container');
+    const klokGrote = document.getElementById('grote-klok-tijd');
+    if (klokKleine) klokKleine.innerText = t;
+    if (klokGrote) klokGrote.innerText = t;
 }, 1000);
 
-// --- 1. ADMIN LOGICA ---
+// --- 1. ADMIN LOGICA (Alleen op admin.html) ---
 if (document.getElementById('is-admin-page')) {
     onAuthStateChanged(auth, (user) => {
         const loginDiv = document.getElementById('login-form');
@@ -40,23 +40,36 @@ if (document.getElementById('is-admin-page')) {
     });
 
     document.getElementById('btn-login')?.addEventListener('click', () => {
-        signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-pass').value).catch(e => alert("Inlog fout"));
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Inlog fout: " + e.message));
     });
+
     document.getElementById('btn-logout')?.addEventListener('click', () => signOut(auth));
 
     function laadAdminData() {
+        // Agenda lijst in Admin (NU MET ONDERWERP)
         onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
+            const list = document.getElementById('admin-agenda-list');
+            if(!list) return;
             let h = '';
             snap.forEach(d => { 
                 const data = d.data();
-                h += `<div class="admin-item"><span>${data.datum}: ${data.titel}</span><button class="btn-del" data-id="${d.id}">X</button></div>`; 
+                // Hier tonen we nu de volledige info: Datum: Titel - Onderwerp
+                h += `<div class="admin-item">
+                        <span><strong>${data.datum}:</strong> ${data.titel} ${data.onderwerp ? '- ' + data.onderwerp : ''}</span>
+                        <button class="btn-del" data-id="${d.id}">X</button>
+                      </div>`; 
             });
-            document.getElementById('admin-agenda-list').innerHTML = h;
+            list.innerHTML = h;
             document.querySelectorAll('.btn-del').forEach(b => b.onclick = () => deleteDoc(doc(db, "agenda", b.dataset.id)));
         });
 
+        // Prefill mededeling & rooster
         onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
         onSnapshot(doc(db, "content", "rooster"), d => { if(d.exists()) { document.getElementById('rooster-zorg').value = d.data().zorgbad; document.getElementById('rooster-wed').value = d.data().wedstrijdbad; }});
+        
+        // Prefill switches en interval
         onSnapshot(doc(db, "content", "instellingen"), d => { 
             if(d.exists()) {
                 const config = d.data();
@@ -68,10 +81,12 @@ if (document.getElementById('is-admin-page')) {
         });
     }
 
+    // Direct opslaan switches
     document.getElementById('klok-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKlokKleine: e.target.checked }, { merge: true }));
     document.getElementById('med-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonMededelingScherm: e.target.checked }, { merge: true }));
-    document.getElementById('btn-save-interval')?.addEventListener('click', () => setDoc(doc(db, "content", "instellingen"), { intervalTijd: parseInt(document.getElementById('interval-tijd').value) }, { merge: true }).then(() => alert("Opgeslagen")));
+    document.getElementById('btn-save-interval')?.addEventListener('click', () => setDoc(doc(db, "content", "instellingen"), { intervalTijd: parseInt(document.getElementById('interval-tijd').value) }, { merge: true }).then(() => alert("Wisseltijd opgeslagen")));
 
+    // Grote klok modus logica (met backup van kleine klok)
     document.getElementById('groot-klok-mode-switch')?.addEventListener('change', async (e) => {
         const isAan = e.target.checked;
         const ref = doc(db, "content", "instellingen");
@@ -81,75 +96,69 @@ if (document.getElementById('is-admin-page')) {
         else await setDoc(ref, { alleenGroteKlok: false, toonKlokKleine: data.toonKlokKleineBackup || false }, { merge: true });
     });
 
+    // Opslaan Agenda
     document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
         const val = document.getElementById('ag-datum').value;
-        if(!val) return alert("Selecteer datum");
+        if(!val) return alert("Selecteer een datum");
         const d = new Date(val); d.setHours(0,0,0,0);
         addDoc(collection(db, "agenda"), {
             datum: d.toLocaleDateString('nl-NL', {day:'numeric', month:'long'}).toUpperCase(),
             titel: document.getElementById('ag-titel').value,
             onderwerp: document.getElementById('ag-onderwerp').value,
             timestamp: d.getTime()
-        }).then(() => { document.getElementById('ag-titel').value = ""; document.getElementById('ag-onderwerp').value = ""; });
+        }).then(() => { 
+            document.getElementById('ag-titel').value = ""; 
+            document.getElementById('ag-onderwerp').value = ""; 
+        });
     });
 
-    document.getElementById('btn-save-med')?.addEventListener('click', () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }).then(() => alert("Opgeslagen")));
-    document.getElementById('btn-save-rooster')?.addEventListener('click', () => setDoc(doc(db, "content", "rooster"), { zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value }).then(() => alert("Opgeslagen")));
+    // Opslaan Mededeling & Rooster
+    document.getElementById('btn-save-med')?.addEventListener('click', () => setDoc(doc(db, "content", "mededeling"), { tekst: document.getElementById('med-tekst').value }).then(() => alert("Tekst opgeslagen")));
+    document.getElementById('btn-save-rooster')?.addEventListener('click', () => setDoc(doc(db, "content", "rooster"), { zorgbad: document.getElementById('rooster-zorg').value, wedstrijdbad: document.getElementById('rooster-wed').value }).then(() => alert("Rooster opgeslagen")));
 }
 
-// --- 2. TV LOGICA ---
+// --- 2. TV LOGICA (Alleen op index.html) ---
 const displayAgenda = document.getElementById('agenda-content');
 if (displayAgenda) {
     let basePages = ['page-agenda', 'page-rooster'], currentIndex = 0, config = {}, medTekst = "", rotTimer;
 
+    // Timer functie die live kan veranderen
     function startRotatie(sec) {
         if(rotTimer) clearInterval(rotTimer);
-        const dwellTime = (sec || 15) * 1000;
-        
         rotTimer = setInterval(() => {
             if(config.alleenGroteKlok) return;
-            
             let rot = [...basePages];
             if(config.toonMededelingScherm && medTekst.trim() !== "") rot.push('page-announcement');
-            
-            // Verwijder active klasse van alle pagina's
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            
-            // Bereken volgende pagina
             currentIndex = (currentIndex + 1) % rot.length;
             const next = document.getElementById(rot[currentIndex]);
-            
-            // CSS handelt de fade-in van 1.5s nu automatisch af
             if(next) next.classList.add('active');
-            
-        }, dwellTime);
+        }, (sec || 15) * 1000);
     }
 
-    // Bij de TV LOGICA voor Agenda
-    // Zoek in script.js naar het gedeelte van de Agenda (TV LOGICA) en gebruik dit:
+    // Live Agenda ophalen
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
-    let h = '';
-    snap.forEach(doc => { 
-        const d = doc.data();
-        h += `<div class="agenda-item">
-                <span class="date">${d.datum}</span> 
-                <span class="text-part">${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span>
-              </div>`; 
-    });
-    displayAgenda.innerHTML = h;
-    });
-
-    // Bij de TV LOGICA voor Rooster
-        onSnapshot(doc(db, "content", "rooster"), (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById('rooster-zorgbad').innerHTML = (data.zorgbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
-          document.getElementById('rooster-wedstrijdbad').innerHTML = (data.wedstrijdbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
-        }
+        let h = '';
+        snap.forEach(doc => { 
+            const d = doc.data();
+            h += `<div class="agenda-item">
+                    <span class="date">${d.datum}</span> 
+                    <span class="text-part">${d.titel} ${d.onderwerp ? '- ' + d.onderwerp : ''}</span>
+                  </div>`; 
+        });
+        displayAgenda.innerHTML = h;
     });
 
+    // Live Rooster ophalen
+    onSnapshot(doc(db, "content", "rooster"), d => { if(d.exists()) {
+        document.getElementById('rooster-zorgbad').innerHTML = (d.data().zorgbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
+        document.getElementById('rooster-wedstrijdbad').innerHTML = (d.data().wedstrijdbad || "").split('\n').map(l => `<div class="rooster-item">${l}</div>`).join('');
+    }});
+
+    // Live Mededeling ophalen
     onSnapshot(doc(db, "content", "mededeling"), d => { medTekst = d.data()?.tekst || ""; document.getElementById('announcement-text').innerText = medTekst; });
 
+    // Live Instellingen (Klokken, Modus, Tijd)
     onSnapshot(doc(db, "content", "instellingen"), d => {
         const oud = config.intervalTijd;
         config = d.data() || {};
@@ -158,11 +167,13 @@ if (displayAgenda) {
         
         if(config.alleenGroteKlok) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-klok-groot').classList.add('active');
+            const grKlokPage = document.getElementById('page-klok-groot');
+            if(grKlokPage) grKlokPage.classList.add('active');
         } else if(oud !== config.intervalTijd) {
             startRotatie(config.intervalTijd);
         }
     });
 
+    // Eerste start
     startRotatie(15);
 }

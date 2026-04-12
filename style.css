@@ -28,12 +28,12 @@ body:not(.admin-body) {
 .text-part { padding-left: 55px; text-indent: -55px; line-height: 1.2; }
 
 /* LESROOSTER SPLITSING (35% / 65%) */
-.rooster-container { display: flex; justify-content: flex-start; gap: 40px; margin-top: 20px; width: 100%; }
-.column-left { flex: 0 0 35%; }  /* Zorgbad kolom op 35% */
-.column-right { flex: 0 0 65%; } /* Wedstrijdbad kolom op 65% */
+.rooster-container { display: flex; justify-content: flex-start; gap: 35px; margin-top: 15px; width: 100%; }
+.column-left { flex: 0 0 40%; }  /* Zorgbad kolom op 35% */
+.column-right { flex: 0 0 60%; } /* Wedstrijdbad kolom op 65% */
 
-.column h2 { font-size: 77px; border-bottom: 7px solid white; padding-bottom: 12px; margin-bottom: 35px; }
-.rooster-item { font-size: 55px; margin-bottom: 22px; line-height: 1.2; padding-left: 35px; text-indent: -35px; }
+.column h2 { font-size: 75px; border-bottom: 7px solid white; padding-bottom: 12px; margin-bottom: 35px; }
+.rooster-item { font-size: 52px; margin-bottom: 22px; line-height: 1.2; padding-left: 35px; text-indent: -35px; }
 
 /* HUISHOUDELIJKE MEDEDELING GROOTTE */
 .ann-header { font-size: 100px; color: #ff0000; margin-bottom: 35px; }

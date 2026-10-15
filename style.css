@@ -19,13 +19,28 @@ body:not(.admin-body) {
 /* HOOFDTITEL GROOTTE */
 .title { color: #ff0000; font-size: 130px; margin: 0 0 35px 0; line-height: 1.0; }
 
-/* AGENDA STYLING */
+/* AGENDA STYLING  */
 .agenda-item { 
-    font-size: 70px; /* Agenda text size */
-    margin-bottom: 35px; display: flex; align-items: flex-start; 
+    font-size: 66px; /* Agenda text size */
+    margin-bottom: 35px; 
+    display: flex; 
+    align-items: flex-start;
+    gap: 40px; /* Vaste tussenruimte tussen datum en tekst */
 }
-.date { width: 600px; flex-shrink: 0; }
-.text-part { padding-left: 55px; text-indent: -55px; line-height: 1.2; }
+
+.date { 
+    width: 580px;          /* Breder gemaakt zodat NOVEMBER en SEPTEMBER altijd passen */
+    flex-shrink: 0; 
+    white-space: nowrap;   /* Zorgt dat dag en maand NOOIT meer onder elkaar breken */
+    color: #ffffff;
+}
+
+.text-part {
+    flex: 1;
+    padding-left: 45px;    /* Tweede regel springt 45px in */
+    text-indent: -45px;    /* Eerste regel begint strak op de lijn */
+    line-height: 1.2;
+}
 
 /* LESROOSTER SPLITSING (35% / 65%) */
 .rooster-container { display: flex; justify-content: flex-start; gap: 35px; margin-top: 15px; width: 100%; }

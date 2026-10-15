@@ -24,7 +24,7 @@ body:not(.admin-body) {
     font-size: 70px; /* Agenda text size */
     margin-bottom: 35px; display: flex; align-items: flex-start; 
 }
-.date { width: 460px; flex-shrink: 0; }
+.date { width: 500px; flex-shrink: 0; }
 .text-part { padding-left: 55px; text-indent: -55px; line-height: 1.2; }
 
 /* LESROOSTER SPLITSING (35% / 65%) */

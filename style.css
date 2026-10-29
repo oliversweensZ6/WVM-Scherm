@@ -1,5 +1,5 @@
 /* ==========================================
-   TV SCHERM STIJLEN (Geoptimaliseerd voor LED Wand)
+   TV SCHERM STIJLEN
    ========================================== */
 body:not(.admin-body) {
     margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden;
@@ -7,7 +7,6 @@ body:not(.admin-body) {
     color: white; font-family: 'Arial', sans-serif; font-weight: bold;
 }
 
-/* Logo netjes in de hoek gehouden (340px) zodat het niet in de weg zit */
 .logo { 
     position: absolute; 
     top: 15px; 
@@ -16,7 +15,6 @@ body:not(.admin-body) {
     z-index: 1000; 
 }
 
-/* Inhoud begint nu op 135px van de bovenkant: precies onder het logo! */
 .page { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
     padding: 135px 60px 25px 60px; 
@@ -33,10 +31,10 @@ body:not(.admin-body) {
     line-height: 1.0; 
 }
 
-/* AGENDA: Nu 58px (12% groter dan 52px, goed leesbaar op afstand) */
+/* AGENDA: 58px goed leesbaar */
 .agenda-item { 
     font-size: 58px; /* Agenda text size */
-    margin-bottom: 18px; /* Compacte witruimte zodat 4-5 items passen */
+    margin-bottom: 18px; 
     display: flex; 
     align-items: baseline; 
     gap: 30px;
@@ -75,7 +73,7 @@ body:not(.admin-body) {
     line-height: 1.2; 
 }
 
-/* HUISHOUDELIJKE MEDEDELING: Begint nu ook veilig onder het logo */
+/* HUISHOUDELIJKE MEDEDELING */
 .ann-header { 
     font-size: 85px; 
     color: #ff0000; 
@@ -87,12 +85,69 @@ body:not(.admin-body) {
     max-width: 95%; 
 }
 
+/* ==========================================
+   THEMA SCHERMEN (KERST EN ZOMER)
+   ========================================== */
+.thema-page {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Kerstachtergrond (werkt met eigen kerst.jpg of fallback foto) */
+#page-kerst {
+    background: linear-gradient(rgba(10, 25, 60, 0.65), rgba(10, 25, 60, 0.75)), 
+                url('kerst.jpg'), 
+                url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Zomerachtergrond (werkt met eigen zomer.jpg of fallback foto) */
+#page-zomer {
+    background: linear-gradient(rgba(10, 45, 90, 0.55), rgba(10, 45, 90, 0.70)), 
+                url('zomer.jpg'), 
+                url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+.thema-container {
+    text-align: center;
+    max-width: 85%;
+    padding: 40px;
+}
+
+.thema-titel {
+    font-size: 110px;
+    color: #ff3b3b;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    text-shadow: 4px 4px 15px rgba(0,0,0,0.8);
+}
+
+#page-zomer .thema-titel {
+    color: #ffd700; /* Zomers goudgeel */
+}
+
+.thema-tekst {
+    font-size: 64px;
+    line-height: 1.35;
+    color: #ffffff;
+    text-shadow: 3px 3px 12px rgba(0,0,0,0.9);
+}
+
 /* GROTE KLOK */
-#page-klok-groot { padding: 0; display: none; align-items: center; justify-content: center; }
-#page-klok-groot.active { display: flex; opacity: 1; }
+#page-klok-groot { 
+    padding: 0 !important; 
+    display: flex !important; 
+    align-items: center; 
+    justify-content: center; 
+}
 #grote-klok-tijd { font-size: 340px; color: #add8e6; text-shadow: 10px 10px 20px black; }
 
-/* KLEINE KLOK: Rechtsonder, botst niet meer met de tekst */
+/* KLEINE KLOK */
 .klok { 
     position: absolute; 
     bottom: 20px; 
@@ -104,7 +159,7 @@ body:not(.admin-body) {
 }
 
 /* ==========================================
-   ADMIN STIJLEN (Blijft blauw en compact voor telefoon)
+   ADMIN STIJLEN (Blauw & Compact)
    ========================================== */
 .admin-body { background: #f0f2f5; color: #333; font-family: -apple-system, sans-serif; padding: 15px; }
 .admin-container { max-width: 480px; margin: 0 auto; }
@@ -115,7 +170,9 @@ body:not(.admin-body) {
 .main-btn { background: #2b4b9b; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; font-size: 18px; margin-top: 5px; }
 .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
 .btn-del { background: #ff4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-.switch-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+/* SWITCHES */
+.switch-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 16px; }
 .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 26px; }

@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Klokken updaten
+// Klokken updaten (elke seconde)
 setInterval(() => {
     const t = new Date().toLocaleTimeString('nl-NL', { hour12: false });
     const klokKleine = document.getElementById('klok-container');
@@ -66,7 +66,6 @@ if (document.getElementById('is-admin-page')) {
         onSnapshot(doc(db, "content", "mededeling"), d => { if(d.exists()) document.getElementById('med-tekst').value = d.data().tekst; });
         onSnapshot(doc(db, "content", "rooster"), d => { if(d.exists()) { document.getElementById('rooster-zorg').value = d.data().zorgbad; document.getElementById('rooster-wed').value = d.data().wedstrijdbad; }});
         
-        // Instellingen switches prefillen
         onSnapshot(doc(db, "content", "instellingen"), d => { 
             if(d.exists()) {
                 const config = d.data();
@@ -80,7 +79,6 @@ if (document.getElementById('is-admin-page')) {
         });
     }
 
-    // Direct opslaan van switches
     document.getElementById('klok-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKlokKleine: e.target.checked }, { merge: true }));
     document.getElementById('med-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonMededelingScherm: e.target.checked }, { merge: true }));
     document.getElementById('kerst-switch')?.addEventListener('change', (e) => setDoc(doc(db, "content", "instellingen"), { toonKerstScherm: e.target.checked }, { merge: true }));
@@ -93,8 +91,21 @@ if (document.getElementById('is-admin-page')) {
         const ref = doc(db, "content", "instellingen");
         const snap = await getDoc(ref);
         const data = snap.data() || {};
-        if(isAan) await setDoc(ref, { alleenGroteKlok: true, toonKlokKleineBackup: data.toonKlokKleine || false, toonKlokKleine: false }, { merge: true });
-        else await setDoc(ref, { alleenGroteKlok: false, toonKlokKleine: data.toonKlokKleineBackup || false }, { merge: true });
+        
+        if (isAan) {
+            await setDoc(ref, { 
+                alleenGroteKlok: true, 
+                toonKlokKleineBackup: data.toonKlokKleine || false, 
+                toonKlokKleine: false,
+                toonKerstScherm: false,
+                toonZomerScherm: false
+            }, { merge: true });
+        } else {
+            await setDoc(ref, { 
+                alleenGroteKlok: false, 
+                toonKlokKleine: data.toonKlokKleineBackup || false 
+            }, { merge: true });
+        }
     });
 
     document.getElementById('btn-save-agenda')?.addEventListener('click', () => {
@@ -119,24 +130,32 @@ if (document.getElementById('is-admin-page')) {
 // --- 2. TV LOGICA ---
 const displayAgenda = document.getElementById('agenda-content');
 if (displayAgenda) {
-    let basePages = ['page-agenda', 'page-rooster'], currentIndex = 0, config = {}, medTekst = "", rotTimer;
+    let basePages = ['page-agenda', 'page-rooster'];
+    let currentIndex = 0;
+    let config = {};
+    let medTekst = "";
+    let rotTimer = null;
+    let wasAlleenGroteKlok = false; // Houdt bij of we net uit de grote klok komen
 
     function startRotatie(sec) {
         if(rotTimer) clearInterval(rotTimer);
+        const dwellTime = (sec || 15) * 1000;
+
         rotTimer = setInterval(() => {
             if(config.alleenGroteKlok) return;
             
-            // Bouw de lijst van actieve pagina's op
             let rot = [...basePages];
             if(config.toonMededelingScherm && medTekst.trim() !== "") rot.push('page-announcement');
             if(config.toonKerstScherm) rot.push('page-kerst');
             if(config.toonZomerScherm) rot.push('page-zomer');
             
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Volgende pagina berekenen
             currentIndex = (currentIndex + 1) % rot.length;
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const next = document.getElementById(rot[currentIndex]);
             if(next) next.classList.add('active');
-        }, (sec || 15) * 1000);
+        }, dwellTime);
     }
 
     onSnapshot(query(collection(db, "agenda"), orderBy("timestamp", "asc")), (snap) => {
@@ -158,18 +177,41 @@ if (displayAgenda) {
 
     onSnapshot(doc(db, "content", "mededeling"), d => { medTekst = d.data()?.tekst || ""; document.getElementById('announcement-text').innerText = medTekst; });
 
+    // Live instellingen luisteraar
     onSnapshot(doc(db, "content", "instellingen"), d => {
-        const oud = config.intervalTijd;
+        const oudTijd = config.intervalTijd;
         config = d.data() || {};
+        
         const klokContainer = document.getElementById('klok-container');
         if(klokContainer) klokContainer.style.display = config.toonKlokKleine ? 'block' : 'none';
         
         if(config.alleenGroteKlok) {
+            wasAlleenGroteKlok = true;
+            // Stop de timer direct
+            if(rotTimer) clearInterval(rotTimer);
+            // Haal alles weg en zet ALLEEN de grote klok aan
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const grKlokPage = document.getElementById('page-klok-groot');
             if(grKlokPage) grKlokPage.classList.add('active');
-        } else if(oud !== config.intervalTijd) {
-            startRotatie(config.intervalTijd);
+        } else {
+            // Als we NET uit de Grote Klok Modus komen:
+            if(wasAlleenGroteKlok) {
+                wasAlleenGroteKlok = false;
+                
+                // 1. Haal de grote klok direct van het scherm!
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                
+                // 2. Start DIRECT en ALTIJD bij de Agenda!
+                currentIndex = 0;
+                const agendaPage = document.getElementById('page-agenda');
+                if(agendaPage) agendaPage.classList.add('active');
+                
+                // 3. Start de rotatie fris vanaf dit moment
+                startRotatie(config.intervalTijd);
+            } else if(oudTijd !== config.intervalTijd) {
+                // Als alleen de wisseltijd in de admin is aangepast
+                startRotatie(config.intervalTijd);
+            }
         }
     });
 
